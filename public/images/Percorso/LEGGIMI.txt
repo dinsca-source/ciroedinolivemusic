@@ -1,0 +1,17 @@
+IMMAGINI WEBP — SEZIONE "IL NOSTRO PERCORSO"
+
+Copia tutti i file .webp nella cartella:
+
+C:\dinocirolivemusic\public\images\percorso\
+
+Percorsi web utilizzati dal sito:
+
+/images/percorso/percorso-01.webp
+/images/percorso/percorso-02.webp
+/images/percorso/percorso-03.webp
+/images/percorso/percorso-04.webp
+/images/percorso/percorso-05.webp
+/images/percorso/percorso-06.webp
+/images/percorso/percorso-07.webp
+
+Le immagini sono state convertite dalle fotografie originali, senza generare o alterare il contenuto.
