@@ -1665,13 +1665,13 @@ export default function Home() {
     ],
   };
   const percorsoImages = [
-    { id: "percorso-01", src: "/images/percorso/percorso-01.webp", width: 555, height: 499 },
-    { id: "percorso-02", src: "/images/percorso/percorso-02.webp", width: 732, height: 495 },
-    { id: "percorso-03", src: "/images/percorso/percorso-03.webp", width: 547, height: 502 },
-    { id: "percorso-04", src: "/images/percorso/percorso-04.webp", width: 427, height: 549 },
-    { id: "percorso-05", src: "/images/percorso/percorso-05.webp", width: 559, height: 517 },
-    { id: "percorso-06", src: "/images/percorso/percorso-06.webp", width: 717, height: 495 },
-    { id: "percorso-07", src: "/images/percorso/percorso-07.webp", width: 492, height: 412 },
+    { id: "percorso-01", src: "/images/Percorso/percorso-01.webp", width: 555, height: 499 },
+    { id: "percorso-02", src: "/images/Percorso/percorso-02.webp", width: 732, height: 495 },
+    { id: "percorso-03", src: "/images/Percorso/percorso-03.webp", width: 547, height: 502 },
+    { id: "percorso-04", src: "/images/Percorso/percorso-04.webp", width: 427, height: 549 },
+    { id: "percorso-05", src: "/images/Percorso/percorso-05.webp", width: 559, height: 517 },
+    { id: "percorso-06", src: "/images/Percorso/percorso-06.webp", width: 717, height: 495 },
+    { id: "percorso-07", src: "/images/Percorso/percorso-07.webp", width: 492, height: 412 },
   ];
   const percorsoItems = percorsoImages.map((item, index) => ({
     id: `gallery-${12 + index}-${item.id}`,
@@ -2269,7 +2269,7 @@ export default function Home() {
 
             <div className="w-full">
               <Image
-                src="/images/live/momenti-dal-vivo-01.webp"
+                src="/images/Live/momenti-dal-vivo-01.webp"
                 alt={text.gallery.imageAlts.livePanorama}
                 width={1537}
                 height={1023}
