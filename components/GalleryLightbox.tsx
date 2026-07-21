@@ -1,7 +1,8 @@
 "use client";
 
 import Image from "next/image";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 type GalleryItem = {
   id: string;
@@ -36,20 +37,154 @@ type GalleryLightboxProps = {
   labels: GalleryLightboxLabels;
 };
 
-export default function GalleryLightbox({ items, narrative, labels }: GalleryLightboxProps) {
+export default function GalleryLightbox({
+  items,
+  narrative,
+  labels,
+}: GalleryLightboxProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
+  const [zoom, setZoom] = useState(1);
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isDragging, setIsDragging] = useState(false);
   const closeButtonRef = useRef<HTMLButtonElement | null>(null);
   const dialogRef = useRef<HTMLDivElement | null>(null);
+  const frameRef = useRef<HTMLDivElement | null>(null);
   const lastFocusedElementRef = useRef<HTMLElement | null>(null);
+  const hasLightboxHistoryEntryRef = useRef(false);
+  const ignoreNextPopStateRef = useRef(false);
+  const isOpenRef = useRef(false);
+  const mouseDragStartRef = useRef<{
+    pointerX: number;
+    pointerY: number;
+    panX: number;
+    panY: number;
+  } | null>(null);
+  const touchPanStartRef = useRef<{
+    touchX: number;
+    touchY: number;
+    panX: number;
+    panY: number;
+  } | null>(null);
+  const pinchStartRef = useRef<{
+    distance: number;
+    zoom: number;
+  } | null>(null);
+  const lastTapTimeRef = useRef(0);
 
-  const isOpen = activeIndex !== null;
-  const activeItem = activeIndex !== null ? items[activeIndex] : null;
+  const activeItem = activeIndex !== null ? (items[activeIndex] ?? null) : null;
+  const isOpen = activeItem !== null;
   const hasMultipleItems = items.length > 1;
-  const heroItem = items[0];
+  const leadItem = items[0] ?? null;
   const portraitItems = items.slice(1, 3);
   const liveItems = items.slice(3, 5);
   const historyItems = items.slice(5, 8);
   const storyItems = items.slice(8);
+
+  const minZoom = 1;
+  const maxZoom = 4;
+
+  const clampZoom = useCallback((value: number) => {
+    return Math.min(maxZoom, Math.max(minZoom, value));
+  }, [maxZoom, minZoom]);
+
+  const resetZoomState = useCallback(() => {
+    setZoom(1);
+    setPan({ x: 0, y: 0 });
+    setIsDragging(false);
+    mouseDragStartRef.current = null;
+    touchPanStartRef.current = null;
+    pinchStartRef.current = null;
+  }, []);
+
+  const applyZoom = useCallback((nextZoom: number) => {
+    setZoom((currentZoom) => {
+      const clampedZoom = clampZoom(nextZoom);
+
+      if (clampedZoom === minZoom && currentZoom !== minZoom) {
+        setPan({ x: 0, y: 0 });
+      }
+
+      return clampedZoom;
+    });
+  }, [clampZoom, minZoom]);
+
+  const increaseZoom = useCallback(() => {
+    setZoom((currentZoom) => {
+      const nextZoom = clampZoom(currentZoom + 0.25);
+      return nextZoom;
+    });
+  }, [clampZoom]);
+
+  const decreaseZoom = useCallback(() => {
+    setZoom((currentZoom) => {
+      const nextZoom = clampZoom(currentZoom - 0.25);
+
+      if (nextZoom === minZoom && currentZoom !== minZoom) {
+        setPan({ x: 0, y: 0 });
+      }
+
+      return nextZoom;
+    });
+  }, [clampZoom, minZoom]);
+
+  const closeLightbox = useCallback(() => {
+    if (!isOpen) {
+      return;
+    }
+
+    resetZoomState();
+
+    const shouldSyncHistory = hasLightboxHistoryEntryRef.current;
+
+    hasLightboxHistoryEntryRef.current = false;
+    setActiveIndex(null);
+
+    if (shouldSyncHistory) {
+      ignoreNextPopStateRef.current = true;
+      window.history.back();
+    }
+  }, [isOpen, resetZoomState]);
+
+  useEffect(() => {
+    isOpenRef.current = isOpen;
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (!isOpen || hasLightboxHistoryEntryRef.current) {
+      return;
+    }
+
+    hasLightboxHistoryEntryRef.current = true;
+    window.history.pushState(
+      {
+        ...(window.history.state ?? {}),
+        galleryLightboxOpen: true,
+      },
+      "",
+    );
+  }, [isOpen]);
+
+  useEffect(() => {
+    function handlePopState() {
+      if (ignoreNextPopStateRef.current) {
+        ignoreNextPopStateRef.current = false;
+        return;
+      }
+
+      if (!hasLightboxHistoryEntryRef.current || !isOpenRef.current) {
+        return;
+      }
+
+      hasLightboxHistoryEntryRef.current = false;
+      setActiveIndex(null);
+    }
+
+    window.addEventListener("popstate", handlePopState);
+
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
+    };
+  }, []);
 
   useEffect(() => {
     if (!isOpen) {
@@ -57,17 +192,25 @@ export default function GalleryLightbox({ items, narrative, labels }: GalleryLig
     }
 
     const previousOverflow = document.body.style.overflow;
+    const previousPosition = document.body.style.position;
+    const previousTop = document.body.style.top;
+    const previousWidth = document.body.style.width;
+    const scrollY = window.scrollY;
+
     lastFocusedElementRef.current = document.activeElement instanceof HTMLElement
       ? document.activeElement
       : null;
 
     document.body.style.overflow = "hidden";
+    document.body.style.position = "fixed";
+    document.body.style.top = `-${scrollY}px`;
+    document.body.style.width = "100%";
     closeButtonRef.current?.focus();
 
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") {
         event.preventDefault();
-        setActiveIndex(null);
+        closeLightbox();
         return;
       }
 
@@ -134,16 +277,17 @@ export default function GalleryLightbox({ items, narrative, labels }: GalleryLig
 
     return () => {
       document.body.style.overflow = previousOverflow;
+      document.body.style.position = previousPosition;
+      document.body.style.top = previousTop;
+      document.body.style.width = previousWidth;
       window.removeEventListener("keydown", handleKeyDown);
       lastFocusedElementRef.current?.focus();
+      window.scrollTo(0, scrollY);
     };
-  }, [hasMultipleItems, isOpen, items.length]);
-
-  function closeLightbox() {
-    setActiveIndex(null);
-  }
+  }, [closeLightbox, hasMultipleItems, isOpen, items.length]);
 
   function showPrevious() {
+    resetZoomState();
     setActiveIndex((current) => {
       if (current === null) {
         return current;
@@ -154,6 +298,7 @@ export default function GalleryLightbox({ items, narrative, labels }: GalleryLig
   }
 
   function showNext() {
+    resetZoomState();
     setActiveIndex((current) => {
       if (current === null) {
         return current;
@@ -161,6 +306,15 @@ export default function GalleryLightbox({ items, narrative, labels }: GalleryLig
 
       return (current + 1) % items.length;
     });
+  }
+
+  function openLightboxAt(index: number) {
+    if (index < 0 || index >= items.length) {
+      return;
+    }
+
+    resetZoomState();
+    setActiveIndex(index);
   }
 
   function renderItemButton(item: GalleryItem, index: number) {
@@ -172,7 +326,7 @@ export default function GalleryLightbox({ items, narrative, labels }: GalleryLig
         type="button"
         className="gallery-media-button"
         aria-label={item.openLabel}
-        onClick={() => setActiveIndex(index)}
+        onClick={() => openLightboxAt(index)}
       >
         {isNaturalHistory ? (
           <span className="gallery-media-card gallery-media-card-history-natural">
@@ -201,11 +355,242 @@ export default function GalleryLightbox({ items, narrative, labels }: GalleryLig
     );
   }
 
+  function getTouchDistance(
+    firstTouch: { clientX: number; clientY: number },
+    secondTouch: { clientX: number; clientY: number },
+  ) {
+    const deltaX = firstTouch.clientX - secondTouch.clientX;
+    const deltaY = firstTouch.clientY - secondTouch.clientY;
+    return Math.hypot(deltaX, deltaY);
+  }
+
+  function handleLightboxMouseDown(event: React.MouseEvent<HTMLDivElement>) {
+    if (zoom <= 1 || event.button !== 0) {
+      return;
+    }
+
+    event.preventDefault();
+    setIsDragging(true);
+    mouseDragStartRef.current = {
+      pointerX: event.clientX,
+      pointerY: event.clientY,
+      panX: pan.x,
+      panY: pan.y,
+    };
+  }
+
+  function handleLightboxMouseMove(event: React.MouseEvent<HTMLDivElement>) {
+    if (!isDragging || !mouseDragStartRef.current) {
+      return;
+    }
+
+    event.preventDefault();
+    const deltaX = event.clientX - mouseDragStartRef.current.pointerX;
+    const deltaY = event.clientY - mouseDragStartRef.current.pointerY;
+    setPan({
+      x: mouseDragStartRef.current.panX + deltaX,
+      y: mouseDragStartRef.current.panY + deltaY,
+    });
+  }
+
+  function stopMouseDrag() {
+    setIsDragging(false);
+    mouseDragStartRef.current = null;
+  }
+
+  function handleLightboxWheel(event: React.WheelEvent<HTMLDivElement>) {
+    event.preventDefault();
+    const delta = event.deltaY < 0 ? 0.2 : -0.2;
+    applyZoom(zoom + delta);
+  }
+
+  function handleLightboxDoubleClick(event: React.MouseEvent<HTMLDivElement>) {
+    event.preventDefault();
+
+    if (zoom > 1) {
+      resetZoomState();
+      return;
+    }
+
+    applyZoom(2);
+  }
+
+  function handleTouchStart(event: React.TouchEvent<HTMLDivElement>) {
+    if (event.touches.length === 2) {
+      const distance = getTouchDistance(event.touches[0], event.touches[1]);
+      pinchStartRef.current = {
+        distance,
+        zoom,
+      };
+      touchPanStartRef.current = null;
+      return;
+    }
+
+    if (event.touches.length !== 1) {
+      return;
+    }
+
+    const now = Date.now();
+    if (now - lastTapTimeRef.current < 280) {
+      if (zoom > 1) {
+        resetZoomState();
+      } else {
+        applyZoom(2);
+      }
+      lastTapTimeRef.current = 0;
+      return;
+    }
+
+    lastTapTimeRef.current = now;
+
+    if (zoom > 1) {
+      touchPanStartRef.current = {
+        touchX: event.touches[0].clientX,
+        touchY: event.touches[0].clientY,
+        panX: pan.x,
+        panY: pan.y,
+      };
+      setIsDragging(true);
+    }
+  }
+
+  function handleTouchMove(event: React.TouchEvent<HTMLDivElement>) {
+    if (event.touches.length === 2 && pinchStartRef.current) {
+      event.preventDefault();
+      const distance = getTouchDistance(event.touches[0], event.touches[1]);
+      const ratio = distance / pinchStartRef.current.distance;
+      applyZoom(pinchStartRef.current.zoom * ratio);
+      return;
+    }
+
+    if (event.touches.length === 1 && touchPanStartRef.current && zoom > 1) {
+      event.preventDefault();
+      const deltaX = event.touches[0].clientX - touchPanStartRef.current.touchX;
+      const deltaY = event.touches[0].clientY - touchPanStartRef.current.touchY;
+      setPan({
+        x: touchPanStartRef.current.panX + deltaX,
+        y: touchPanStartRef.current.panY + deltaY,
+      });
+    }
+  }
+
+  function handleTouchEnd(event: React.TouchEvent<HTMLDivElement>) {
+    if (event.touches.length < 2) {
+      pinchStartRef.current = null;
+    }
+
+    if (event.touches.length === 0) {
+      touchPanStartRef.current = null;
+      setIsDragging(false);
+    }
+  }
+
+  const lightboxPortal =
+    typeof document !== "undefined" && isOpen && activeItem
+      ? createPortal(
+          <div
+            ref={dialogRef}
+            className="gallery-lightbox"
+            role="dialog"
+            aria-modal="true"
+            aria-label={labels.dialogLabel}
+            onClick={(event) => {
+              if (event.target === event.currentTarget) {
+                closeLightbox();
+              }
+            }}
+          >
+            {hasMultipleItems && (
+              <div className="gallery-lightbox-nav">
+                <button
+                  type="button"
+                  className="gallery-lightbox-prev"
+                  onClick={showPrevious}
+                  aria-label={labels.previousLabel}
+                >
+                  <span aria-hidden="true">‹</span>
+                </button>
+                <button
+                  type="button"
+                  className="gallery-lightbox-next"
+                  onClick={showNext}
+                  aria-label={labels.nextLabel}
+                >
+                  <span aria-hidden="true">›</span>
+                </button>
+              </div>
+            )}
+
+            <button
+              ref={closeButtonRef}
+              type="button"
+              className="gallery-lightbox-close"
+              onClick={closeLightbox}
+              aria-label={labels.closeLabel}
+              title={labels.closeLabel}
+            >
+              <span aria-hidden="true">×</span>
+            </button>
+
+            <div className="gallery-lightbox-zoom-controls" aria-label="Zoom controls">
+              <button
+                type="button"
+                onClick={decreaseZoom}
+                aria-label="Zoom out"
+                disabled={zoom <= minZoom}
+              >
+                <span aria-hidden="true">−</span>
+              </button>
+              <button
+                type="button"
+                onClick={increaseZoom}
+                aria-label="Zoom in"
+                disabled={zoom >= maxZoom}
+              >
+                <span aria-hidden="true">+</span>
+              </button>
+            </div>
+
+            <div className="gallery-lightbox-inner">
+              <div
+                ref={frameRef}
+                className={zoom > 1 ? "gallery-lightbox-frame gallery-lightbox-frame-zoomed" : "gallery-lightbox-frame"}
+                onWheel={handleLightboxWheel}
+                onDoubleClick={handleLightboxDoubleClick}
+                onMouseDown={handleLightboxMouseDown}
+                onMouseMove={handleLightboxMouseMove}
+                onMouseUp={stopMouseDrag}
+                onMouseLeave={stopMouseDrag}
+                onTouchStart={handleTouchStart}
+                onTouchMove={handleTouchMove}
+                onTouchEnd={handleTouchEnd}
+              >
+                <Image
+                  src={activeItem.src}
+                  alt={activeItem.alt}
+                  fill
+                  sizes="100vw"
+                  className="gallery-lightbox-image"
+                  style={{
+                    transform: `translate3d(${pan.x}px, ${pan.y}px, 0) scale(${zoom})`,
+                    transformOrigin: "center center",
+                    transition: isDragging ? "none" : "transform 160ms ease",
+                  }}
+                />
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )
+      : null;
+
   return (
     <>
-      <div className="gallery-narrative" aria-label={labels.dialogLabel}>
-        <div className="gallery-hero">{heroItem ? renderItemButton(heroItem, 0) : null}</div>
+      <div className="gallery-lead">
+        {leadItem ? renderItemButton(leadItem, 0) : null}
+      </div>
 
+      <div className="gallery-narrative" aria-label={labels.dialogLabel}>
         <div className="gallery-contemporary-copy">
           <h3>{narrative.contemporaryTitle}</h3>
           <p>{narrative.contemporaryText}</p>
@@ -239,55 +624,7 @@ export default function GalleryLightbox({ items, narrative, labels }: GalleryLig
         </article>
       </div>
 
-      {isOpen && activeItem && (
-        <div
-          ref={dialogRef}
-          className="gallery-lightbox"
-          role="dialog"
-          aria-modal="true"
-          aria-label={labels.dialogLabel}
-          onClick={(event) => {
-            if (event.target === event.currentTarget) {
-              closeLightbox();
-            }
-          }}
-        >
-          <div className="gallery-lightbox-inner">
-            <div className="gallery-lightbox-toolbar">
-              {hasMultipleItems && (
-                <div className="gallery-lightbox-nav">
-                  <button type="button" onClick={showPrevious} aria-label={labels.previousLabel}>
-                    <span aria-hidden="true">‹</span>
-                  </button>
-                  <button type="button" onClick={showNext} aria-label={labels.nextLabel}>
-                    <span aria-hidden="true">›</span>
-                  </button>
-                </div>
-              )}
-
-              <button
-                ref={closeButtonRef}
-                type="button"
-                className="gallery-lightbox-close"
-                onClick={closeLightbox}
-                aria-label={labels.closeLabel}
-              >
-                <span aria-hidden="true">×</span>
-              </button>
-            </div>
-
-            <div className="gallery-lightbox-frame">
-              <Image
-                src={activeItem.src}
-                alt={activeItem.alt}
-                fill
-                sizes="100vw"
-                className="gallery-lightbox-image"
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      {lightboxPortal}
     </>
   );
 }

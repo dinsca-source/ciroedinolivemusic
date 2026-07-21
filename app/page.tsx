@@ -5,7 +5,7 @@ import { type FormEvent, useEffect, useState } from "react";
 import BackToTop from "@/components/BackToTop";
 import GalleryLightbox from "@/components/GalleryLightbox";
 
-type LanguageCode = "it" | "en" | "fr" | "es" | "de";
+type LanguageCode = "it" | "en" | "fr" | "es" | "de" | "ru";
 type EventType = "hotel" | "wedding" | "private_party" | "corporate" | "other";
 type FormStatus = "idle" | "sending" | "success" | "error";
 
@@ -179,6 +179,36 @@ type Translation = {
         iframeTitle: string;
         externalAriaLabel: string;
       };
+      somewhereOverTheRainbow: {
+        title: string;
+        subtitle: string;
+        iframeTitle: string;
+        externalAriaLabel: string;
+      };
+      unforgettable: {
+        title: string;
+        subtitle: string;
+        iframeTitle: string;
+        externalAriaLabel: string;
+      };
+      oiMari: {
+        title: string;
+        subtitle: string;
+        iframeTitle: string;
+        externalAriaLabel: string;
+      };
+      stopBajon: {
+        title: string;
+        subtitle: string;
+        iframeTitle: string;
+        externalAriaLabel: string;
+      };
+      stayingAlive: {
+        title: string;
+        subtitle: string;
+        iframeTitle: string;
+        externalAriaLabel: string;
+      };
     };
     externalLinkText: string;
   };
@@ -260,6 +290,7 @@ const languages: {
   { code: "fr", flag: "/flags/fr.svg", label: "Français" },
   { code: "es", flag: "/flags/es.svg", label: "Español" },
   { code: "de", flag: "/flags/de.svg", label: "Deutsch" },
+  { code: "ru", flag: "/flags/ru.svg", label: "Русский" },
 ];
 
 const backToTopLabels: Record<LanguageCode, string> = {
@@ -268,6 +299,7 @@ const backToTopLabels: Record<LanguageCode, string> = {
   fr: "Retour en haut",
   es: "Volver arriba",
   de: "Nach oben",
+  ru: "Наверх",
 };
 
 const eventTypeValues: EventType[] = [
@@ -294,53 +326,127 @@ type VideoItemKey =
   | "figliDelleStelle"
   | "staserachesera"
   | "rossettoECaffe"
-  | "circoloForestieriShorts";
+  | "circoloForestieriShorts"
+  | "somewhereOverTheRainbow"
+  | "unforgettable"
+  | "oiMari"
+  | "stopBajon"
+  | "stayingAlive";
 
 type VideoOrientation = "landscape" | "portrait";
 
 const videoItems: Array<{
   key: VideoItemKey;
   title: string;
-  youtubeId: string;
   url: string;
   orientation: VideoOrientation;
 }> = [
   {
     key: "ymca",
     title: "YMCA",
-    youtubeId: "SoL-Ea-7saw",
     url: "https://youtu.be/SoL-Ea-7saw",
     orientation: "landscape",
   },
   {
     key: "figliDelleStelle",
     title: "Figli delle Stelle",
-    youtubeId: "vByRPZXEuUc",
     url: "https://youtu.be/vByRPZXEuUc",
     orientation: "landscape",
   },
   {
     key: "staserachesera",
     title: "Stasera che sera",
-    youtubeId: "Mde58mxxKbE",
     url: "https://youtu.be/Mde58mxxKbE",
     orientation: "landscape",
   },
   {
     key: "rossettoECaffe",
     title: "Rossetto e Caffè",
-    youtubeId: "6VYUqA0_POc",
     url: "https://youtu.be/6VYUqA0_POc",
     orientation: "landscape",
   },
   {
     key: "circoloForestieriShorts",
     title: "Ciro & Dino al Circolo dei Forestieri",
-    youtubeId: "QHTufT0ldyE",
     url: "https://youtube.com/shorts/QHTufT0ldyE?feature=share",
     orientation: "portrait",
   },
+  {
+    key: "somewhereOverTheRainbow",
+    title: "Somewhere Over The Rainbow",
+    url: "https://youtube.com/shorts/rkrZYHHd2h8?feature=share",
+    orientation: "portrait",
+  },
+  {
+    key: "unforgettable",
+    title: "Unforgettable",
+    url: "https://youtu.be/nS_tqpvlMIc",
+    orientation: "landscape",
+  },
+  {
+    key: "oiMari",
+    title: "Oi Marì",
+    url: "https://youtu.be/bq83alE8kDY",
+    orientation: "landscape",
+  },
+  {
+    key: "stopBajon",
+    title: "Stop Bajon",
+    url: "https://youtu.be/4pN0QpVZ4zs",
+    orientation: "landscape",
+  },
+  {
+    key: "stayingAlive",
+    title: "Staying Alive",
+    url: "https://youtube.com/shorts/D0PFt9mzmEw?feature=share",
+    orientation: "portrait",
+  },
 ];
+
+function getYouTubeId(videoUrl: string): string | null {
+  try {
+    const parsedUrl = new URL(videoUrl);
+    const normalizedHost = parsedUrl.hostname.replace(/^www\./, "");
+
+    if (normalizedHost === "youtu.be") {
+      return parsedUrl.pathname.split("/").filter(Boolean)[0] ?? null;
+    }
+
+    if (
+      normalizedHost === "youtube.com"
+      || normalizedHost === "m.youtube.com"
+      || normalizedHost === "youtube-nocookie.com"
+    ) {
+      if (parsedUrl.pathname.startsWith("/shorts/")) {
+        return parsedUrl.pathname.split("/").filter(Boolean)[1] ?? null;
+      }
+
+      const searchVideoId = parsedUrl.searchParams.get("v");
+      if (searchVideoId) {
+        return searchVideoId;
+      }
+
+      const pathSegments = parsedUrl.pathname.split("/").filter(Boolean);
+      if ((pathSegments[0] === "embed" || pathSegments[0] === "v") && pathSegments[1]) {
+        return pathSegments[1];
+      }
+    }
+
+    return null;
+  } catch {
+    return null;
+  }
+}
+
+function getYouTubeEmbedUrl(videoUrl: string): string | null {
+  const youtubeId = getYouTubeId(videoUrl);
+
+  if (!youtubeId) {
+    return null;
+  }
+
+  return `https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0&modestbranding=1`;
+}
 
 const translations: Record<LanguageCode, Translation> = {
   it: {
@@ -515,6 +621,36 @@ const translations: Record<LanguageCode, Translation> = {
           subtitle: "Ciro & Dino al Circolo dei Forestieri",
           iframeTitle: "Short YouTube di Ciro & Dino al Circolo dei Forestieri",
           externalAriaLabel: "Guarda Ciro & Dino al Circolo dei Forestieri su YouTube in una nuova scheda",
+        },
+        somewhereOverTheRainbow: {
+          title: "Somewhere Over The Rainbow",
+          subtitle: "Una melodia senza tempo, intima ed elegante.",
+          iframeTitle: "Short YouTube di Somewhere Over The Rainbow",
+          externalAriaLabel: "Guarda Somewhere Over The Rainbow su YouTube in una nuova scheda",
+        },
+        unforgettable: {
+          title: "Unforgettable",
+          subtitle: "Un classico raffinato, perfetto per atmosfere romantiche.",
+          iframeTitle: "Video YouTube di Unforgettable",
+          externalAriaLabel: "Guarda Unforgettable su YouTube in una nuova scheda",
+        },
+        oiMari: {
+          title: "Oi Marì",
+          subtitle: "Tradizione e calore mediterraneo in una versione coinvolgente.",
+          iframeTitle: "Video YouTube di Oi Marì",
+          externalAriaLabel: "Guarda Oi Marì su YouTube in una nuova scheda",
+        },
+        stopBajon: {
+          title: "Stop Bajon",
+          subtitle: "Ritmo e leggerezza per un momento di festa.",
+          iframeTitle: "Video YouTube di Stop Bajon",
+          externalAriaLabel: "Guarda Stop Bajon su YouTube in una nuova scheda",
+        },
+        stayingAlive: {
+          title: "Staying Alive",
+          subtitle: "Un'energia dance immediata che accende la serata.",
+          iframeTitle: "Short YouTube di Staying Alive",
+          externalAriaLabel: "Guarda Staying Alive su YouTube in una nuova scheda",
         },
       },
       externalLinkText: "Guarda su YouTube",
@@ -765,6 +901,36 @@ const translations: Record<LanguageCode, Translation> = {
           iframeTitle: "YouTube Short of Ciro & Dino at the Circolo dei Forestieri",
           externalAriaLabel: "Watch Ciro & Dino at the Circolo dei Forestieri on YouTube in a new tab",
         },
+        somewhereOverTheRainbow: {
+          title: "Somewhere Over The Rainbow",
+          subtitle: "A timeless melody with an intimate, elegant mood.",
+          iframeTitle: "YouTube Short of Somewhere Over The Rainbow",
+          externalAriaLabel: "Watch Somewhere Over The Rainbow on YouTube in a new tab",
+        },
+        unforgettable: {
+          title: "Unforgettable",
+          subtitle: "A refined classic, ideal for romantic atmospheres.",
+          iframeTitle: "YouTube video of Unforgettable",
+          externalAriaLabel: "Watch Unforgettable on YouTube in a new tab",
+        },
+        oiMari: {
+          title: "Oi Marì",
+          subtitle: "Mediterranean warmth and tradition in an engaging performance.",
+          iframeTitle: "YouTube video of Oi Marì",
+          externalAriaLabel: "Watch Oi Marì on YouTube in a new tab",
+        },
+        stopBajon: {
+          title: "Stop Bajon",
+          subtitle: "Rhythm and lightness for a joyful party moment.",
+          iframeTitle: "YouTube video of Stop Bajon",
+          externalAriaLabel: "Watch Stop Bajon on YouTube in a new tab",
+        },
+        stayingAlive: {
+          title: "Staying Alive",
+          subtitle: "Instant dance energy to lift the evening.",
+          iframeTitle: "YouTube Short of Staying Alive",
+          externalAriaLabel: "Watch Staying Alive on YouTube in a new tab",
+        },
       },
       externalLinkText: "Watch on YouTube",
     },
@@ -1013,6 +1179,36 @@ const translations: Record<LanguageCode, Translation> = {
           subtitle: "Ciro & Dino au Circolo dei Forestieri",
           iframeTitle: "Short YouTube de Ciro & Dino au Circolo dei Forestieri",
           externalAriaLabel: "Regarder Ciro & Dino au Circolo dei Forestieri sur YouTube dans un nouvel onglet",
+        },
+        somewhereOverTheRainbow: {
+          title: "Somewhere Over The Rainbow",
+          subtitle: "Une mélodie intemporelle, intime et élégante.",
+          iframeTitle: "Short YouTube de Somewhere Over The Rainbow",
+          externalAriaLabel: "Regarder Somewhere Over The Rainbow sur YouTube dans un nouvel onglet",
+        },
+        unforgettable: {
+          title: "Unforgettable",
+          subtitle: "Un classique raffiné, parfait pour une ambiance romantique.",
+          iframeTitle: "Vidéo YouTube de Unforgettable",
+          externalAriaLabel: "Regarder Unforgettable sur YouTube dans un nouvel onglet",
+        },
+        oiMari: {
+          title: "Oi Marì",
+          subtitle: "Chaleur méditerranéenne et tradition dans une interprétation captivante.",
+          iframeTitle: "Vidéo YouTube de Oi Marì",
+          externalAriaLabel: "Regarder Oi Marì sur YouTube dans un nouvel onglet",
+        },
+        stopBajon: {
+          title: "Stop Bajon",
+          subtitle: "Rythme et légèreté pour un moment festif.",
+          iframeTitle: "Vidéo YouTube de Stop Bajon",
+          externalAriaLabel: "Regarder Stop Bajon sur YouTube dans un nouvel onglet",
+        },
+        stayingAlive: {
+          title: "Staying Alive",
+          subtitle: "Une énergie dance immédiate qui fait monter l'ambiance.",
+          iframeTitle: "Short YouTube de Staying Alive",
+          externalAriaLabel: "Regarder Staying Alive sur YouTube dans un nouvel onglet",
         },
       },
       externalLinkText: "Regarder sur YouTube",
@@ -1263,6 +1459,36 @@ const translations: Record<LanguageCode, Translation> = {
           iframeTitle: "Short de YouTube de Ciro & Dino en el Circolo dei Forestieri",
           externalAriaLabel: "Ver Ciro & Dino en el Circolo dei Forestieri en YouTube en una nueva pestaña",
         },
+        somewhereOverTheRainbow: {
+          title: "Somewhere Over The Rainbow",
+          subtitle: "Una melodía atemporal, íntima y elegante.",
+          iframeTitle: "Short de YouTube de Somewhere Over The Rainbow",
+          externalAriaLabel: "Ver Somewhere Over The Rainbow en YouTube en una nueva pestaña",
+        },
+        unforgettable: {
+          title: "Unforgettable",
+          subtitle: "Un clásico refinado, ideal para ambientes románticos.",
+          iframeTitle: "Vídeo de YouTube de Unforgettable",
+          externalAriaLabel: "Ver Unforgettable en YouTube en una nueva pestaña",
+        },
+        oiMari: {
+          title: "Oi Marì",
+          subtitle: "Tradición y calidez mediterránea en una interpretación envolvente.",
+          iframeTitle: "Vídeo de YouTube de Oi Marì",
+          externalAriaLabel: "Ver Oi Marì en YouTube en una nueva pestaña",
+        },
+        stopBajon: {
+          title: "Stop Bajon",
+          subtitle: "Ritmo y ligereza para un momento de fiesta.",
+          iframeTitle: "Vídeo de YouTube de Stop Bajon",
+          externalAriaLabel: "Ver Stop Bajon en YouTube en una nueva pestaña",
+        },
+        stayingAlive: {
+          title: "Staying Alive",
+          subtitle: "Energía dance inmediata para encender la noche.",
+          iframeTitle: "Short de YouTube de Staying Alive",
+          externalAriaLabel: "Ver Staying Alive en YouTube en una nueva pestaña",
+        },
       },
       externalLinkText: "Ver en YouTube",
     },
@@ -1512,6 +1738,36 @@ const translations: Record<LanguageCode, Translation> = {
           iframeTitle: "YouTube-Short von Ciro & Dino im Circolo dei Forestieri",
           externalAriaLabel: "Ciro & Dino im Circolo dei Forestieri auf YouTube in einem neuen Tab ansehen",
         },
+        somewhereOverTheRainbow: {
+          title: "Somewhere Over The Rainbow",
+          subtitle: "Eine zeitlose Melodie mit intimer und eleganter Atmosphäre.",
+          iframeTitle: "YouTube-Short von Somewhere Over The Rainbow",
+          externalAriaLabel: "Somewhere Over The Rainbow auf YouTube in einem neuen Tab ansehen",
+        },
+        unforgettable: {
+          title: "Unforgettable",
+          subtitle: "Ein raffinierter Klassiker, ideal für romantische Stimmungen.",
+          iframeTitle: "YouTube-Video von Unforgettable",
+          externalAriaLabel: "Unforgettable auf YouTube in einem neuen Tab ansehen",
+        },
+        oiMari: {
+          title: "Oi Marì",
+          subtitle: "Mediterrane Wärme und Tradition in einer mitreißenden Interpretation.",
+          iframeTitle: "YouTube-Video von Oi Marì",
+          externalAriaLabel: "Oi Marì auf YouTube in einem neuen Tab ansehen",
+        },
+        stopBajon: {
+          title: "Stop Bajon",
+          subtitle: "Rhythmus und Leichtigkeit für einen festlichen Moment.",
+          iframeTitle: "YouTube-Video von Stop Bajon",
+          externalAriaLabel: "Stop Bajon auf YouTube in einem neuen Tab ansehen",
+        },
+        stayingAlive: {
+          title: "Staying Alive",
+          subtitle: "Sofortige Dance-Energie, die den Abend in Bewegung bringt.",
+          iframeTitle: "YouTube-Short von Staying Alive",
+          externalAriaLabel: "Staying Alive auf YouTube in einem neuen Tab ansehen",
+        },
       },
       externalLinkText: "Auf YouTube ansehen",
     },
@@ -1587,6 +1843,285 @@ const translations: Record<LanguageCode, Translation> = {
     },
     changeLanguage: "Sprache ändern",
   },
+
+  ru: {
+    languageName: "Русский",
+    enterTitle: "Выберите язык",
+    enterSubtitle: "Музыка, которая дарит эмоции",
+    nav: {
+      home: "Главная",
+      about: "О нас",
+      audio: "Аудио",
+      repertoire: "Репертуар",
+      gallery: "Галерея",
+      video: "Видео",
+      contacts: "Контакты",
+    },
+    hero: {
+      eyebrow: "Добро пожаловать в нашу музыку",
+      subtitle: "Музыка для незабываемых моментов",
+      scroll: "Открыть",
+    },
+    about: {
+      kicker: "НАША ИСТОРИЯ",
+      title: "рассказанная через музыку",
+      intro:
+        "Каждый вечер - это встреча. Каждая песня рассказывает об эмоции.",
+      paragraphOne:
+        "Для нас музыка - это не просто профессия: это самый искренний способ общаться, трогать сердца и создавать воспоминания, которые остаются с людьми надолго. Ciro & Dino Live Music родился из встречи двух творческих путей, объединенных одной страстью: нести на сцену элегантность, музыкальное качество и искренний контакт с публикой. С помощью клавишных, гитары и вокала мы создаем живые выступления, которые естественно адаптируются к атмосфере каждого события.",
+      paragraphTwo:
+        "Около тридцати лет мы постоянно сопровождаем музыкальные вечера исторического Circolo dei Forestieri в Сорренто, выступая перед гостями со всего мира. Этот длительный опыт научил нас тому, что каждая аудитория уникальна и что каждое событие требует чуткости, умения слушать и способности выбрать правильную музыку в правильный момент. Наш репертуар охватывает более шестидесяти лет великих хитов: от лучших итальянских и неаполитанских мелодий до международных стандартов, а также крупных классиков pop, rock, soul, dance и latin, которые продолжают трогать разные поколения.",
+      paragraphThree:
+        "Будь то элегантный ужин, прием, частный праздник или вечер танцев, каждое выступление мы строим с одной целью: создать вовлекающую, изысканную атмосферу и оставить особенное воспоминание. За эти годы мы поняли, что ценность живой музыки измеряется не только качеством исполнения, но и способностью превратить обычный вечер в событие, которое хочется помнить. С этим настроем мы выходим на сцену каждый раз.",
+      pointExperience: "Более тридцати лет опыта в живой музыке.",
+      pointRepertoire:
+        "Итальянский, неаполитанский и международный репертуар, который постоянно обновляется.",
+      pointTailored:
+        "Индивидуальные выступления для приемов, эксклюзивных мероприятий и частных праздников.",
+    },
+    liveVenue: {
+      kicker: "ГДЕ НАС СЛУШАТЬ ВЖИВУЮ",
+      title: "Наш музыкальный дом в Сорренто",
+      paragraphOne:
+        "Около тридцати лет, без перерывов, Ciro & Dino сопровождают своей музыкой вечера Circolo dei Forestieri – Terrazza delle Sirene, одного из самых впечатляющих мест в самом сердце Сорренто.",
+      paragraphTwo:
+        "Со временем эта престижная терраса стала нашим музыкальным домом: местом встречи элегантности, панорамы и живой музыки, где каждое выступление рождается из прямого контакта с публикой.",
+      highlight:
+        "Около тридцати лет живой музыки на одной и той же престижной площадке.",
+      venueName: "Circolo dei Forestieri – Terrazza delle Sirene",
+      addressLine1: "Via Luigi de Maio, 35",
+      addressLine2: "Sorrento",
+      addressLine3: "Città Metropolitana di Napoli",
+      addressLine4: "Italia",
+      directions: "Маршрут",
+      directionsAriaLabel:
+        "Открыть маршрут к Circolo dei Forestieri – Terrazza delle Sirene в Google Maps (новая вкладка)",
+      venueContactsTitle: "Контакты площадки",
+      venueEmailLabel: "E-mail площадки: info@circolodeiforestieri.com",
+      venuePhoneLabel: "Телефон площадки: +39 081 877 3263",
+      artisticNotePrefix:
+        "По вопросам выступлений, доступности и частных мероприятий воспользуйтесь",
+      artisticNoteLinkLabel: "формой контактов",
+      artisticNoteSuffix: "Ciro & Dino Live Music.",
+    },
+    repertoire: {
+      kicker: "Наш репертуар",
+      title: "От традиции к международному звучанию",
+      description:
+        "Итальянская и неаполитанская музыка, международные стандарты, pop, rock, soul, dance и latin: каждое выступление адаптируется под атмосферу, публику и формат события.",
+      closing:
+        "Каждый вечер рождается из встречи с публикой. Поэтому наш репертуар никогда не бывает жестким: он подстраивается под атмосферу, гостей и тип мероприятия, сочетая итальянскую и неаполитанскую музыку, международные стандарты, pop, rock, soul, dance и latin-звучание.",
+      categories: {
+        italian: {
+          title: "Итальянская музыка",
+          description: "Вневременные мелодии и великие хиты, близкие слушателям разных поколений.",
+        },
+        neapolitan: {
+          title: "Неаполитанская классика",
+          description: "Песни неаполитанской традиции в теплой, элегантной и естественной интерпретации.",
+        },
+        international: {
+          title: "Международные стандарты",
+          description: "Международная подборка, созданная для сопровождения изысканной атмосферы со стилем.",
+        },
+        pop: {
+          title: "Pop",
+          description: "Узнаваемые и универсальные композиции для открытой и вовлекающей атмосферы.",
+        },
+        rock: {
+          title: "Rock",
+          description: "Тщательно выбранная классика с характером и энергией, всегда в гармонии с моментом.",
+        },
+        soul: {
+          title: "Soul",
+          description: "Теплые и изысканные тембры, добавляющие глубину, ритм и эмоциональную интенсивность.",
+        },
+        dance: {
+          title: "Dance",
+          description: "Динамичные композиции, которые поднимают энергию, когда этого требует вечер.",
+        },
+        latin: {
+          title: "Latin",
+          description: "Latin-ритмы и оттенки, которые придают музыкальному пути тепло, плавность и разнообразие.",
+        },
+      },
+    },
+    gallery: {
+      kicker: "ЖИВЫЕ МОМЕНТЫ",
+      title: "Моменты, в которых звучит наша музыка",
+      intro:
+        "Каждый кадр сохраняет атмосферу вечера, встречу с публикой и эмоцию живой музыки. Визуальное путешествие по настоящему и истории Ciro & Dino Live Music.",
+      contemporaryTitle: "Музыка сегодня",
+      contemporaryText:
+        "Среди инструментов, голосов и панорам каждое выступление рождается из прямой связи с публикой и уникальной атмосферы каждой ночи.",
+      historyKicker: "НАШ ПУТЬ",
+      historyTitle: "Более тридцати лет музыки вместе",
+      historyText:
+        "Фотографии меняются, инструменты эволюционируют, но страсть остается прежней. Музыкальное путешествие, начавшееся более тридцати лет назад и продолжающееся без перерывов до сегодняшнего дня.",
+      historyCaptions: {
+        firstYears: "Начало нашего музыкального пути",
+        fredBongusto: "Особенная встреча с Фредом Бонгусто",
+        povia: "С Повией, объединенные любовью к музыке",
+      },
+      historyItemAlts: {
+        firstYears: "Ciro и Dino во время одного из первых выступлений их музыкального пути.",
+        fredBongusto: "Ciro и Dino вместе с Фредом Бонгусто на фотографии из их творческой истории.",
+        povia: "Ciro и Dino вместе с Повией во время встречи, связанной с музыкой.",
+      },
+      imageAlts: {
+        hero: "Ciro и Dino во время музыкального выступления на закате.",
+        ciroPortrait: "Ciro с гитарой на фоне побережья.",
+        dinoPortrait: "Dino за фортепиано на фоне побережья.",
+        livePanorama: "Ciro и Dino во время живого выступления на террасе.",
+        liveSunset: "Ciro и Dino во время выступления на закате.",
+        historyGuitar: "Ciro и Dino на фотографии первых лет своего пути.",
+        historyPortrait: "Ciro и Dino вместе с гитарой на исторической фотографии.",
+        historyLive: "Ciro и Dino во время одного из первых живых выступлений.",
+      },
+      openImageAriaLabel: "Открыть изображение в большом формате",
+      dialogLabel: "Фотогалерея Ciro & Dino Live Music",
+      closeLabel: "Закрыть галерею",
+      previousLabel: "Предыдущее изображение",
+      nextLabel: "Следующее изображение",
+    },
+    video: {
+      kicker: "Живое выступление",
+      title: "Наша музыка вживую",
+      description:
+        "Здесь мы публикуем подборку видео, показывающих энергию, элегантность и контакт с публикой во время наших выступлений.",
+      collections: {
+        ymca: {
+          subtitle: "Энергичная и сразу узнаваемая композиция, идеально передающая импульс и вовлеченность.",
+          iframeTitle: "Видео YouTube: YMCA",
+          externalAriaLabel: "Смотреть YMCA на YouTube в новой вкладке",
+        },
+        figliDelleStelle: {
+          subtitle: "Элегантная классика, в которой сочетаются атмосфера и непосредственность.",
+          iframeTitle: "Видео YouTube: Figli delle Stelle",
+          externalAriaLabel: "Смотреть Figli delle Stelle на YouTube в новой вкладке",
+        },
+        staserachesera: {
+          subtitle: "Большая итальянская композиция, придающая ритм и чувство общей памяти.",
+          iframeTitle: "Видео YouTube: Stasera che sera",
+          externalAriaLabel: "Смотреть Stasera che sera на YouTube в новой вкладке",
+        },
+        rossettoECaffe: {
+          title: "Губная помада и кофе",
+          subtitle: "Губная помада и кофе",
+          iframeTitle: "Видео YouTube: Губная помада и кофе",
+          externalAriaLabel: "Смотреть Губная помада и кофе на YouTube в новой вкладке",
+        },
+        circoloForestieriShorts: {
+          title: "Ciro & Dino в Circolo dei Forestieri",
+          subtitle: "Ciro & Dino в Circolo dei Forestieri",
+          iframeTitle: "YouTube Shorts: Ciro & Dino в Circolo dei Forestieri",
+          externalAriaLabel: "Смотреть Ciro & Dino в Circolo dei Forestieri на YouTube в новой вкладке",
+        },
+        somewhereOverTheRainbow: {
+          title: "Somewhere Over The Rainbow",
+          subtitle: "Вневременная мелодия с камерным и элегантным настроением.",
+          iframeTitle: "YouTube Shorts: Somewhere Over The Rainbow",
+          externalAriaLabel: "Смотреть Somewhere Over The Rainbow на YouTube в новой вкладке",
+        },
+        unforgettable: {
+          title: "Unforgettable",
+          subtitle: "Изысканная классика, идеально подходящая для романтичной атмосферы.",
+          iframeTitle: "Видео YouTube: Unforgettable",
+          externalAriaLabel: "Смотреть Unforgettable на YouTube в новой вкладке",
+        },
+        oiMari: {
+          title: "Oi Marì",
+          subtitle: "Средиземноморское тепло и традиция в увлекательном исполнении.",
+          iframeTitle: "Видео YouTube: Oi Marì",
+          externalAriaLabel: "Смотреть Oi Marì на YouTube в новой вкладке",
+        },
+        stopBajon: {
+          title: "Stop Bajon",
+          subtitle: "Ритм и лёгкость для праздничного настроения.",
+          iframeTitle: "Видео YouTube: Stop Bajon",
+          externalAriaLabel: "Смотреть Stop Bajon на YouTube в новой вкладке",
+        },
+        stayingAlive: {
+          title: "Staying Alive",
+          subtitle: "Мгновенная dance-энергия, которая оживляет вечер.",
+          iframeTitle: "YouTube Shorts: Staying Alive",
+          externalAriaLabel: "Смотреть Staying Alive на YouTube в новой вкладке",
+        },
+      },
+      externalLinkText: "Смотреть на YouTube",
+    },
+    audio: {
+      kicker: "АУДИО",
+      title: "Слушайте нашу музыку",
+      description:
+        "Три коллекции, отражающие разные грани нашего репертуара: эмоцию, энергию и вневременную классику.",
+      collections: {
+        love: {
+          title: "Love Collection",
+          subtitle:
+            "Подборка романтичных и мелодичных композиций для самых эмоциональных моментов.",
+          iframeTitle: "Плеер SoundCloud для Love Collection",
+          externalAriaLabel: "Слушать Love Collection на SoundCloud в новой вкладке",
+        },
+        party: {
+          title: "Party Collection",
+          subtitle:
+            "Подборка ритмичных и захватывающих треков для вечеринок, приемов и энергичных мероприятий.",
+          iframeTitle: "Плеер SoundCloud для Party Collection",
+          externalAriaLabel: "Слушать Party Collection на SoundCloud в новой вкладке",
+        },
+        timeless: {
+          title: "Timeless Classics Collection",
+          subtitle:
+            "Великие итальянские и международные классические песни, которые продолжают трогать поколения.",
+          iframeTitle: "Плеер SoundCloud для Timeless Classics Collection",
+          externalAriaLabel: "Слушать Timeless Classics Collection на SoundCloud в новой вкладке",
+        },
+      },
+      externalLinkText: "Слушать на SoundCloud",
+    },
+    contacts: {
+      kicker: "Контакты",
+      title: "Живая музыка для отелей, мероприятий и особых вечеров",
+      subtitle: "Давайте обсудим ваше мероприятие",
+      description:
+        "Заполните форму, и мы вскоре ответим вам персональным предложением.",
+      fields: {
+        fullName: "Имя и фамилия",
+        email: "E-mail",
+        eventType: "Тип мероприятия",
+        eventDate: "Дата мероприятия",
+        location: "Место проведения",
+        message: "Сообщение",
+        consent: "Я согласен(на) на обработку моих персональных данных для обратной связи.",
+      },
+      eventTypes: {
+        hotel: "Отель",
+        wedding: "Свадьба",
+        private_party: "Частная вечеринка",
+        corporate: "Корпоративное мероприятие",
+        other: "Другое",
+      },
+      placeholders: {
+        fullName: "Напр. Иван Иванов",
+        email: "name@example.com",
+        location: "Напр. Москва",
+        message: "Расскажите нам дату, время и желаемую атмосферу...",
+      },
+      submit: "Отправить запрос",
+      sending: "Отправка...",
+      success: "Сообщение успешно отправлено. Мы скоро с вами свяжемся.",
+      error: "При отправке произошла ошибка. Пожалуйста, попробуйте снова через несколько минут.",
+      validation: {
+        fullName: "Введите имя и фамилию (не менее 2 символов).",
+        email: "Введите корректный адрес электронной почты.",
+        eventType: "Выберите тип мероприятия.",
+        message: "Введите сообщение длиной не менее 10 символов.",
+        consent: "Для отправки запроса необходимо согласие на обработку данных.",
+      },
+    },
+    changeLanguage: "Сменить язык",
+  },
 };
 
 function getSavedLanguage(): LanguageCode | null {
@@ -1607,6 +2142,7 @@ export default function Home() {
   const [language, setLanguage] = useState<LanguageCode>(() => getSavedLanguage() ?? "it");
   const [languageSelected, setLanguageSelected] = useState(() => getSavedLanguage() !== null);
   const [languageMenuOpen, setLanguageMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [siteReady, setSiteReady] = useState(false);
   const [introClosing, setIntroClosing] = useState(false);
   const [contactFormData, setContactFormData] =
@@ -1663,6 +2199,15 @@ export default function Home() {
       "Ciro & Dino bei einem musikalischen Auftritt am Klavier",
       "Ciro & Dino auf einem historischen Foto ihres musikalischen Weges",
     ],
+    ru: [
+      "Ciro & Dino во время одного из своих ранних живых выступлений",
+      "Ciro & Dino во время музыкального вечера с гостями",
+      "Ciro & Dino в неформальный момент во время вечера",
+      "Ciro & Dino во время исторического живого выступления",
+      "Ciro & Dino во время многолюдного вечера с публикой",
+      "Ciro & Dino во время музыкального выступления за фортепиано",
+      "Ciro & Dino на исторической фотографии их музыкального пути",
+    ],
   };
   const percorsoImages = [
     { id: "percorso-01", src: "/images/Percorso/percorso-01.webp", width: 555, height: 499 },
@@ -1684,12 +2229,12 @@ export default function Home() {
   }));
   const galleryItems = [
     {
-      id: "gallery-01-hero-duo-sorrento",
-      src: "/gallery/gallery-01-hero-duo-sorrento.webp",
-      alt: text.gallery.imageAlts.hero,
+      id: "gallery-01-momenti-dal-vivo-01",
+      src: "/images/Live/momenti-dal-vivo-01.webp",
+      alt: text.gallery.imageAlts.livePanorama,
       variant: "hero" as const,
       priority: true,
-      openLabel: `${text.gallery.openImageAriaLabel}: ${text.gallery.imageAlts.hero}`,
+      openLabel: `${text.gallery.openImageAriaLabel}: ${text.gallery.imageAlts.livePanorama}`,
     },
     {
       id: "gallery-02-ciro-portrait",
@@ -1780,28 +2325,34 @@ export default function Home() {
   ];
   const audioCollections = [
     {
-      id: "love-collection",
-      title: text.audio.collections.love.title,
-      subtitle: text.audio.collections.love.subtitle,
-      iframeTitle: text.audio.collections.love.iframeTitle,
-      externalAriaLabel: text.audio.collections.love.externalAriaLabel,
-      externalUrl: "https://soundcloud.com/ciro-dino-live-music/love-collection-romantic-songs",
+      id: "timeless-classics-collection",
+      title: text.audio.collections.timeless.title,
+      subtitle: text.audio.collections.timeless.subtitle,
+      iframeTitle: text.audio.collections.timeless.iframeTitle,
+      externalAriaLabel:
+        text.audio.collections.timeless.externalAriaLabel,
+      externalUrl:
+        "https://soundcloud.com/ciro-dino-live-music/timeless-classics-collection",
     },
     {
       id: "party-collection",
       title: text.audio.collections.party.title,
       subtitle: text.audio.collections.party.subtitle,
       iframeTitle: text.audio.collections.party.iframeTitle,
-      externalAriaLabel: text.audio.collections.party.externalAriaLabel,
-      externalUrl: "https://soundcloud.com/ciro-dino-live-music/party-collection-dance-party",
+      externalAriaLabel:
+        text.audio.collections.party.externalAriaLabel,
+      externalUrl:
+        "https://soundcloud.com/ciro-dino-live-music/party-collection-dance-party",
     },
     {
-      id: "timeless-classics-collection",
-      title: text.audio.collections.timeless.title,
-      subtitle: text.audio.collections.timeless.subtitle,
-      iframeTitle: text.audio.collections.timeless.iframeTitle,
-      externalAriaLabel: text.audio.collections.timeless.externalAriaLabel,
-      externalUrl: "https://soundcloud.com/ciro-dino-live-music/timeless-classics-collection",
+      id: "love-collection",
+      title: text.audio.collections.love.title,
+      subtitle: text.audio.collections.love.subtitle,
+      iframeTitle: text.audio.collections.love.iframeTitle,
+      externalAriaLabel:
+        text.audio.collections.love.externalAriaLabel,
+      externalUrl:
+        "https://soundcloud.com/ciro-dino-live-music/love-collection-romantic-songs",
     },
   ];
   const currentLanguage = languages.find((item) => item.code === language);
@@ -1824,11 +2375,72 @@ export default function Home() {
     document.documentElement.lang = language;
   }, [language]);
 
+  useEffect(() => {
+    function handleKeydown(event: KeyboardEvent) {
+      if (event.key === "Escape") {
+        setMobileMenuOpen(false);
+        setLanguageMenuOpen(false);
+      }
+    }
+
+    window.addEventListener("keydown", handleKeydown);
+
+    return () => {
+      window.removeEventListener("keydown", handleKeydown);
+    };
+  }, []);
+
+  useEffect(() => {
+    function closeMobileOnDesktopWidth() {
+      if (window.innerWidth > 850) {
+        setMobileMenuOpen(false);
+      }
+    }
+
+    function closeMobileOnOrientationChange() {
+      setMobileMenuOpen(false);
+    }
+
+    window.addEventListener("resize", closeMobileOnDesktopWidth);
+    window.addEventListener("orientationchange", closeMobileOnOrientationChange);
+    closeMobileOnDesktopWidth();
+
+    return () => {
+      window.removeEventListener("resize", closeMobileOnDesktopWidth);
+      window.removeEventListener("orientationchange", closeMobileOnOrientationChange);
+    };
+  }, []);
+
+  function toggleMobileMenu() {
+    setMobileMenuOpen((open) => {
+      const nextOpen = !open;
+
+      if (nextOpen) {
+        setLanguageMenuOpen(false);
+      }
+
+      return nextOpen;
+    });
+  }
+
+  function toggleLanguageMenu() {
+    setLanguageMenuOpen((open) => {
+      const nextOpen = !open;
+
+      if (nextOpen) {
+        setMobileMenuOpen(false);
+      }
+
+      return nextOpen;
+    });
+  }
+
   function selectLanguage(code: LanguageCode) {
     if (introClosing) {
       return;
     }
 
+    setMobileMenuOpen(false);
     setLanguage(code);
     setLanguageMenuOpen(false);
     setIntroClosing(true);
@@ -1843,6 +2455,7 @@ export default function Home() {
   }
 
   function reopenLanguageSelector() {
+    setMobileMenuOpen(false);
     setLanguageMenuOpen(false);
     setIntroClosing(false);
     setLanguageSelected(false);
@@ -2038,21 +2651,48 @@ export default function Home() {
               <small>Live Music</small>
             </a>
 
-            <div className="navbar-links">
-              <a href="#home">{text.nav.home}</a>
-              <a href="#about">{text.nav.about}</a>
-              <a href="#repertoire">{text.nav.repertoire}</a>
-              <a href="#gallery">{text.nav.gallery}</a>
-              <a href="#video">{text.nav.video}</a>
-              <a href="#audio">{text.nav.audio}</a>
-              <a href="#contacts">{text.nav.contacts}</a>
-            </div>
+            <button
+              type="button"
+              className="mobile-menu-button"
+              onClick={toggleMobileMenu}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="main-navigation-links"
+              aria-label={mobileMenuOpen ? "Chiudi menu" : "Apri menu"}
+            >
+              <span aria-hidden="true">{mobileMenuOpen ? "✕" : "☰"}</span>
+            </button>
 
+            <div
+              id="main-navigation-links"
+              className={`navbar-links ${mobileMenuOpen ? "navbar-links-open" : ""}`}
+            >
+              <a href="#home" onClick={() => setMobileMenuOpen(false)}>
+                {text.nav.home}
+              </a>
+              <a href="#about" onClick={() => setMobileMenuOpen(false)}>
+                {text.nav.about}
+              </a>
+              <a href="#repertoire" onClick={() => setMobileMenuOpen(false)}>
+                {text.nav.repertoire}
+              </a>
+              <a href="#gallery" onClick={() => setMobileMenuOpen(false)}>
+                {text.nav.gallery}
+              </a>
+              <a href="#video" onClick={() => setMobileMenuOpen(false)}>
+                {text.nav.video}
+              </a>
+              <a href="#audio" onClick={() => setMobileMenuOpen(false)}>
+                {text.nav.audio}
+              </a>
+              <a href="#contacts" onClick={() => setMobileMenuOpen(false)}>
+                {text.nav.contacts}
+              </a>
+            </div>
             <div className="language-menu">
               <button
                 type="button"
                 className="current-language"
-                onClick={() => setLanguageMenuOpen((open) => !open)}
+                onClick={toggleLanguageMenu}
                 aria-expanded={languageMenuOpen}
                 aria-label={text.changeLanguage}
                 title={text.changeLanguage}
@@ -2267,18 +2907,6 @@ export default function Home() {
             <h2 id="gallery-title">{text.gallery.title}</h2>
             <p className="gallery-intro">{text.gallery.intro}</p>
 
-            <div className="w-full">
-              <Image
-                src="/images/Live/momenti-dal-vivo-01.webp"
-                alt={text.gallery.imageAlts.livePanorama}
-                width={1537}
-                height={1023}
-                priority
-                sizes="(max-width: 1200px) 100vw, 1200px"
-                className="h-auto w-full rounded-2xl shadow-[0_14px_36px_rgba(0,0,0,0.28)]"
-              />
-            </div>
-
             <GalleryLightbox
               items={galleryItems}
               narrative={{
@@ -2308,7 +2936,12 @@ export default function Home() {
               {videoItems.map((videoItem) => {
                 const collection = text.video.collections[videoItem.key];
                 const cardTitle = collection.title ?? videoItem.title;
-                const embedUrl = `https://www.youtube-nocookie.com/embed/${videoItem.youtubeId}?rel=0&modestbranding=1`;
+                const embedUrl = getYouTubeEmbedUrl(videoItem.url);
+
+                if (!embedUrl) {
+                  return null;
+                }
+
                 const cardClassName = videoItem.orientation === "portrait"
                   ? "video-card video-card-portrait"
                   : "video-card";
