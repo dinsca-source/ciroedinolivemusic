@@ -2646,6 +2646,72 @@ a {
   }
 }
 
+@media screen and (orientation: landscape) and (max-height: 600px) and (max-width: 950px) {
+  .language-intro {
+    min-height: 100dvh;
+    padding: 16px;
+    overflow-y: auto;
+  }
+
+  .language-intro-image {
+    display: none;
+  }
+
+  .language-intro-overlay {
+    display: none;
+  }
+
+  .intro-light {
+    display: none;
+  }
+
+  .language-intro-content {
+    padding: 20px 16px;
+  }
+
+  .language-intro-content h1 {
+    font-size: clamp(1.8rem, 5vw, 3rem);
+    line-height: 1;
+  }
+
+  .language-intro-content h2 {
+    margin: 0 0 16px;
+    font-size: clamp(0.95rem, 2vw, 1.25rem);
+  }
+
+  .intro-welcome,
+  .intro-live-music {
+    display: none;
+  }
+
+  .intro-gold-line {
+    margin: 12px auto;
+    width: 60px;
+  }
+
+  .intro-languages {
+    gap: 8px;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .intro-languages button {
+    min-width: 110px;
+    min-height: 48px;
+    padding: 8px 12px;
+    gap: 8px;
+    font-size: 0.65rem;
+  }
+
+  .intro-flag {
+    font-size: 1.3rem;
+  }
+
+  .intro-language-name {
+    font-size: 0.6rem;
+  }
+}
+
 @media (max-width: 760px) {
   .language-intro-image img {
     object-position: center center;
@@ -2995,5 +3061,258 @@ a {
     opacity: 1;
     transform: scale(1);
     filter: blur(0);
+  }
+}
+
+/* ─── Show more / Show less button ──────────────────────────────────────── */
+
+.section-show-more {
+  display: flex;
+  justify-content: center;
+  margin-top: 36px;
+}
+
+.show-more-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 28px;
+  background: transparent;
+  border: 1px solid rgba(200, 166, 74, 0.45);
+  border-radius: 40px;
+  color: var(--gold-light);
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-size: clamp(0.88rem, 1vw, 1rem);
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  cursor: pointer;
+  transition:
+    background 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease;
+}
+
+.show-more-btn:hover {
+  background: rgba(200, 166, 74, 0.1);
+  border-color: rgba(200, 166, 74, 0.75);
+  color: #f2dd97;
+}
+
+.show-more-btn:focus-visible {
+  outline: 2px solid rgba(228, 202, 122, 0.8);
+  outline-offset: 4px;
+}
+
+/* ─── Tracklist toggle button ────────────────────────────────────────────── */
+
+.tracklist-toggle-btn {
+  align-self: flex-start;
+  background: transparent;
+  border: 1px solid rgba(200, 166, 74, 0.3);
+  border-radius: 30px;
+  color: var(--gold-light);
+  font-size: 0.67rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 7px 16px;
+  cursor: pointer;
+  transition:
+    background 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease;
+}
+
+.tracklist-toggle-btn:hover {
+  background: rgba(200, 166, 74, 0.1);
+  border-color: rgba(200, 166, 74, 0.65);
+  color: #f2dd97;
+}
+
+.tracklist-toggle-btn:focus-visible {
+  outline: 2px solid rgba(228, 202, 122, 0.8);
+  outline-offset: 4px;
+}
+
+/* ─── Tracklist dialog ───────────────────────────────────────────────────── */
+
+/* Tracklist Modal - React Portal with createPortal */
+.tracklist-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.72);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.tracklist-modal {
+  position: relative;
+  width: min(94vw, 560px);
+  max-height: min(90vh, 700px);
+  border: 1px solid rgba(200, 166, 74, 0.35);
+  border-radius: 20px;
+  background:
+    linear-gradient(
+      170deg,
+      rgba(200, 166, 74, 0.07),
+      rgba(10, 10, 10, 0.97) 55%
+    );
+  color: rgba(255, 249, 236, 0.95);
+  backdrop-filter: blur(12px);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.tracklist-modal-header {
+  position: relative;
+  padding: 28px 52px 18px 28px;
+  border-bottom: 1px solid rgba(200, 166, 74, 0.18);
+  flex-shrink: 0;
+}
+
+.tracklist-modal-title {
+  margin: 0 0 4px;
+  font-family: var(--font-cormorant), Georgia, serif;
+  font-size: clamp(0.72rem, 0.9vw, 0.85rem);
+  font-weight: 500;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgba(200, 166, 74, 0.85);
+}
+
+.tracklist-modal-subtitle {
+  margin: 0;
+  font-family: var(--font-playfair), Georgia, serif;
+  font-size: clamp(1.05rem, 1.3vw, 1.3rem);
+  font-weight: 500;
+  color: rgba(255, 249, 236, 0.97);
+}
+
+.tracklist-modal-close {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  background: transparent;
+  border: 1px solid rgba(200, 166, 74, 0.3);
+  border-radius: 50%;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  color: rgba(200, 166, 74, 0.75);
+  font-size: 0.85rem;
+  cursor: pointer;
+  pointer-events: auto;
+  transition:
+    background 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease;
+}
+
+.tracklist-modal-close:hover {
+  background: rgba(200, 166, 74, 0.14);
+  color: #f2dd97;
+  border-color: rgba(200, 166, 74, 0.6);
+}
+
+.tracklist-modal-close:focus-visible {
+  outline: 2px solid rgba(228, 202, 122, 0.8);
+  outline-offset: 3px;
+}
+
+.tracklist-list {
+  flex: 1;
+  overflow-y: auto;
+  margin: 0;
+  padding: 18px 28px;
+  list-style: decimal;
+  counter-reset: track-counter;
+  scrollbar-width: thin;
+  scrollbar-color: rgba(200, 166, 74, 0.3) transparent;
+}
+
+.tracklist-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.tracklist-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.tracklist-list::-webkit-scrollbar-thumb {
+  background: rgba(200, 166, 74, 0.3);
+  border-radius: 4px;
+}
+
+.tracklist-list li {
+  padding: 6px 0;
+  font-size: clamp(0.88rem, 1vw, 0.95rem);
+  color: rgba(255, 255, 255, 0.82);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  line-height: 1.5;
+}
+
+.tracklist-list li:last-child {
+  border-bottom: none;
+}
+
+.tracklist-modal-footer {
+  padding: 16px 28px 24px;
+  border-top: 1px solid rgba(200, 166, 74, 0.14);
+  flex-shrink: 0;
+}
+
+.tracklist-export-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 10px 22px;
+  background: rgba(200, 166, 74, 0.12);
+  border: 1px solid rgba(200, 166, 74, 0.45);
+  border-radius: 30px;
+  color: var(--gold-light);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition:
+    background 220ms ease,
+    border-color 220ms ease,
+    color 220ms ease;
+}
+
+.tracklist-export-btn:hover {
+  background: rgba(200, 166, 74, 0.22);
+  border-color: rgba(200, 166, 74, 0.75);
+  color: #f2dd97;
+}
+
+.tracklist-export-btn:focus-visible {
+  outline: 2px solid rgba(228, 202, 122, 0.8);
+  outline-offset: 4px;
+}
+
+@media (max-width: 480px) {
+  .tracklist-modal {
+    width: 96vw;
+    max-height: 88vh;
+    border-radius: 14px;
+  }
+
+  .tracklist-modal-header {
+    padding: 22px 48px 14px 18px;
+  }
+
+  .tracklist-list {
+    padding: 14px 18px;
+  }
+
+  .tracklist-modal-footer {
+    padding: 12px 18px 18px;
   }
 }

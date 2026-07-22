@@ -1,9 +1,13 @@
 "use client";
 
 import Image from "next/image";
-import { type FormEvent, useEffect, useState } from "react";
+import { type FormEvent, useEffect, useRef, useState } from "react";
 import BackToTop from "@/components/BackToTop";
 import GalleryLightbox from "@/components/GalleryLightbox";
+import { MediaPlaybackProvider } from "@/components/MediaPlaybackContext";
+import YouTubePlayer from "@/components/YouTubePlayer";
+import SoundCloudPlayer from "@/components/SoundCloudPlayer";
+import TracklistDialog from "@/components/TracklistDialog";
 
 type LanguageCode = "it" | "en" | "fr" | "es" | "de" | "ru";
 type EventType = "hotel" | "wedding" | "private_party" | "corporate" | "other";
@@ -148,6 +152,8 @@ type Translation = {
     kicker: string;
     title: string;
     description: string;
+    showAll: string;
+    showLess: string;
     collections: {
       ymca: {
         title?: string;
@@ -216,6 +222,13 @@ type Translation = {
     kicker: string;
     title: string;
     description: string;
+    showAll: string;
+    showLess: string;
+    tracklistButton: string;
+    tracklistHide: string;
+    tracklistExport: string;
+    tracklistHeading: string;
+    tracklistClose: string;
     collections: {
       love: {
         title: string;
@@ -448,6 +461,98 @@ function getYouTubeEmbedUrl(videoUrl: string): string | null {
   return `https://www.youtube-nocookie.com/embed/${youtubeId}?rel=0&modestbranding=1`;
 }
 
+const audioTracklists: Record<string, string[]> = {
+  "timeless-classics-collection": [
+    "Caruso",
+    "Con te Partirò",
+    "Adagio",
+    "Nessun Dorma",
+    "Torna A Surriento",
+    "Hymne à l'amour",
+    "L'ultima Notte",
+    "My Way",
+    "Ali Di Libertà",
+    "Cinque giorni",
+    "O Sole Mio",
+    "The Prayer",
+    "Good Love Gone Bad",
+    "Il Mare Calmo Della Sera",
+    "La forza della vita",
+    "The Little Drummer Boy",
+    "Be My Love",
+  ],
+  "party-collection": [
+    "I Can Hear Your Heart Beat",
+    "Viva la Vida",
+    "Take Me Home, Country Roads",
+    "Volare",
+    "Sweet Caroline",
+    "Papa Loves Mambo",
+    "New York, New York",
+    "That's Amore",
+    "Proud Mary",
+    "Lady (Hear Me Tonight)",
+    "It's Not Unusual",
+    "You",
+    "I'm Your Boogie Man",
+    "Bamboleo",
+    "You're the First, the Last, My Everything",
+    "Bailando",
+    "Look Me in the Heart",
+    "Baila Morena",
+    "You See the Trouble with Me",
+    "So Far Away",
+    "Moonlight Lady",
+    "Quiero Saber",
+    "Loch Lomond",
+    "Soul Food to Go",
+  ],
+  "love-collection": [
+    "Perfect",
+    "Io Amo",
+    "Shape of My Heart",
+    "Baby Can I Hold You",
+    "A Song for You",
+    "Ain't No Sunshine",
+    "Historia de un Amor",
+    "A Thousand Years",
+    "Bellissima Bruttissima",
+    "Abbracciame",
+    "Che Cosa C'è",
+    "Everything",
+    "Balliamo",
+    "How Deep Is Your Love",
+    "Guarda che luna",
+    "Anonimo Veneziano",
+    "Amico che voli",
+    "Ce la farò",
+    "Mi Manchi",
+    "Try a Little Tenderness",
+    "Dio, come ti amo",
+    "Ordinary",
+    "E penso a te",
+    "Maria Dolores",
+    "Thinking Out Loud",
+    "Me and Mrs. Jones",
+    "Put Your Head on My Shoulder",
+    "Sittin' on the Dock of the Bay",
+    "Per sempre sì",
+    "Facciamo pace",
+    "This Masquerade",
+    "Stretti",
+    "Oggi sono io",
+    "Ore d'amore",
+    "Turn Out the Lamplight",
+    "Sailing",
+    "Rossetto e caffè",
+    "La mia storia tra le dita",
+    "Mal di te",
+    "Senza 'e te",
+    "Nun ce sta' piacere",
+    "Solo tu",
+  ],
+};
+
 const translations: Record<LanguageCode, Translation> = {
   it: {
     languageName: "Italiano",
@@ -654,6 +759,8 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Guarda su YouTube",
+      showAll: "Mostra tutti i video",
+      showLess: "Mostra meno video",
     },
     audio: {
       kicker: "AUDIO",
@@ -684,6 +791,13 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Ascolta su SoundCloud",
+      showAll: "Mostra tutti gli audio",
+      showLess: "Mostra meno audio",
+      tracklistButton: "Visualizza elenco brani del mix",
+      tracklistHide: "Nascondi elenco brani",
+      tracklistExport: "Esporta elenco brani",
+      tracklistHeading: "Elenco brani",
+      tracklistClose: "Chiudi",
     },
     contacts: {
       kicker: "Contatti",
@@ -933,6 +1047,8 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Watch on YouTube",
+      showAll: "Show all videos",
+      showLess: "Show fewer videos",
     },
     audio: {
       kicker: "AUDIO",
@@ -963,6 +1079,13 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Listen on SoundCloud",
+      showAll: "Show all audio",
+      showLess: "Show less audio",
+      tracklistButton: "View mix tracklist",
+      tracklistHide: "Hide tracklist",
+      tracklistExport: "Export tracklist",
+      tracklistHeading: "Tracklist",
+      tracklistClose: "Close",
     },
     contacts: {
       kicker: "Contacts",
@@ -1212,6 +1335,8 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Regarder sur YouTube",
+      showAll: "Voir toutes les vidéos",
+      showLess: "Voir moins de vidéos",
     },
     audio: {
       kicker: "AUDIO",
@@ -1242,6 +1367,13 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Écouter sur SoundCloud",
+      showAll: "Voir tous les audios",
+      showLess: "Voir moins d'audios",
+      tracklistButton: "Voir la liste des titres du mix",
+      tracklistHide: "Masquer la liste des titres",
+      tracklistExport: "Exporter la liste des titres",
+      tracklistHeading: "Liste des titres",
+      tracklistClose: "Fermer",
     },
     contacts: {
       kicker: "Contacts",
@@ -1491,6 +1623,8 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Ver en YouTube",
+      showAll: "Ver todos los vídeos",
+      showLess: "Ver menos vídeos",
     },
     audio: {
       kicker: "AUDIO",
@@ -1521,6 +1655,13 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Escuchar en SoundCloud",
+      showAll: "Ver todos los audios",
+      showLess: "Ver menos audios",
+      tracklistButton: "Ver lista de temas del mix",
+      tracklistHide: "Ocultar lista de temas",
+      tracklistExport: "Exportar lista de temas",
+      tracklistHeading: "Lista de temas",
+      tracklistClose: "Cerrar",
     },
     contacts: {
       kicker: "Contacto",
@@ -1770,6 +1911,8 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Auf YouTube ansehen",
+      showAll: "Alle Videos anzeigen",
+      showLess: "Weniger Videos anzeigen",
     },
     audio: {
       kicker: "AUDIO",
@@ -1800,6 +1943,13 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Auf SoundCloud anhören",
+      showAll: "Alle Audios anzeigen",
+      showLess: "Weniger Audios anzeigen",
+      tracklistButton: "Trackliste des Mix anzeigen",
+      tracklistHide: "Trackliste ausblenden",
+      tracklistExport: "Trackliste exportieren",
+      tracklistHeading: "Trackliste",
+      tracklistClose: "Schließen",
     },
     contacts: {
       kicker: "Kontakt",
@@ -2049,6 +2199,8 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Смотреть на YouTube",
+      showAll: "Показать все видео",
+      showLess: "Показать меньше видео",
     },
     audio: {
       kicker: "АУДИО",
@@ -2079,6 +2231,13 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Слушать на SoundCloud",
+      showAll: "Показать все аудио",
+      showLess: "Показать меньше аудио",
+      tracklistButton: "Посмотреть список треков микса",
+      tracklistHide: "Скрыть список треков",
+      tracklistExport: "Экспортировать список треков",
+      tracklistHeading: "Список треков",
+      tracklistClose: "Закрыть",
     },
     contacts: {
       kicker: "Контакты",
@@ -2152,6 +2311,11 @@ export default function Home() {
     Partial<Record<"fullName" | "email" | "eventType" | "message" | "consent", string>>
   >({});
   const [minEventDate] = useState(() => new Date().toISOString().split("T")[0]);
+  const [showAllVideo, setShowAllVideo] = useState(false);
+  const [showAllAudio, setShowAllAudio] = useState(false);
+  const [openTracklistId, setOpenTracklistId] = useState<string | null>(null);
+  const videoSectionRef = useRef<HTMLElement>(null);
+  const audioSectionRef = useRef<HTMLElement>(null);
   const text = translations[language];
   const percorsoAltByLanguage: Record<LanguageCode, string[]> = {
     it: [
@@ -2237,22 +2401,22 @@ export default function Home() {
       openLabel: `${text.gallery.openImageAriaLabel}: ${text.gallery.imageAlts.livePanorama}`,
     },
     {
-      id: "gallery-02-ciro-portrait",
-      src: "/gallery/gallery-02-ciro-portrait.webp",
-      alt: text.gallery.imageAlts.ciroPortrait,
-      variant: "portrait" as const,
-      openLabel: `${text.gallery.openImageAriaLabel}: ${text.gallery.imageAlts.ciroPortrait}`,
-    },
-    {
       id: "gallery-03-dino-portrait",
-      src: "/gallery/gallery-03-dino-portrait.webp",
+      src: "/gallery/gallery-03-dino-portrait-v2.webp",
       alt: text.gallery.imageAlts.dinoPortrait,
       variant: "portrait" as const,
       openLabel: `${text.gallery.openImageAriaLabel}: ${text.gallery.imageAlts.dinoPortrait}`,
     },
     {
+      id: "gallery-02-ciro-portrait",
+      src: "/gallery/gallery-02-ciro-portrait-v2.webp",
+      alt: text.gallery.imageAlts.ciroPortrait,
+      variant: "portrait" as const,
+      openLabel: `${text.gallery.openImageAriaLabel}: ${text.gallery.imageAlts.ciroPortrait}`,
+    },
+    {
       id: "gallery-04-duo-live-panorama",
-      src: "/gallery/gallery-04-duo-live-panorama.webp",
+      src: "/gallery/gallery-04-duo-live-panorama-v2.webp",
       alt: text.gallery.imageAlts.livePanorama,
       variant: "live-large" as const,
       openLabel: `${text.gallery.openImageAriaLabel}: ${text.gallery.imageAlts.livePanorama}`,
@@ -2333,6 +2497,7 @@ export default function Home() {
         text.audio.collections.timeless.externalAriaLabel,
       externalUrl:
         "https://soundcloud.com/ciro-dino-live-music/timeless-classics-collection",
+      tracklist: audioTracklists["timeless-classics-collection"],
     },
     {
       id: "party-collection",
@@ -2343,6 +2508,7 @@ export default function Home() {
         text.audio.collections.party.externalAriaLabel,
       externalUrl:
         "https://soundcloud.com/ciro-dino-live-music/party-collection-dance-party",
+      tracklist: audioTracklists["party-collection"],
     },
     {
       id: "love-collection",
@@ -2353,6 +2519,7 @@ export default function Home() {
         text.audio.collections.love.externalAriaLabel,
       externalUrl:
         "https://soundcloud.com/ciro-dino-live-music/love-collection-romantic-songs",
+      tracklist: audioTracklists["love-collection"],
     },
   ];
   const currentLanguage = languages.find((item) => item.code === language);
@@ -2554,6 +2721,7 @@ export default function Home() {
   }
 
   return (
+    <MediaPlaybackProvider>
     <main>
       {!languageSelected && (
 		<section
@@ -2666,9 +2834,6 @@ export default function Home() {
               id="main-navigation-links"
               className={`navbar-links ${mobileMenuOpen ? "navbar-links-open" : ""}`}
             >
-              <a href="#home" onClick={() => setMobileMenuOpen(false)}>
-                {text.nav.home}
-              </a>
               <a href="#about" onClick={() => setMobileMenuOpen(false)}>
                 {text.nav.about}
               </a>
@@ -2909,6 +3074,7 @@ export default function Home() {
 
             <GalleryLightbox
               items={galleryItems}
+              onOpen={() => setOpenTracklistId(null)}
               narrative={{
                 contemporaryTitle: text.gallery.contemporaryTitle,
                 contemporaryText: text.gallery.contemporaryText,
@@ -2926,14 +3092,14 @@ export default function Home() {
           </div>
         </section>
 
-        <section className="content-section video-section" id="video" aria-labelledby="video-title">
+        <section ref={videoSectionRef} className="content-section video-section" id="video" aria-labelledby="video-title">
           <div className="content-section-inner video-section-inner">
             <p className="section-kicker">{text.video.kicker}</p>
             <h2 id="video-title">{text.video.title}</h2>
             <p className="video-intro">{text.video.description}</p>
 
             <div className="video-grid">
-              {videoItems.map((videoItem) => {
+              {(showAllVideo ? videoItems : videoItems.slice(0, 3)).map((videoItem) => {
                 const collection = text.video.collections[videoItem.key];
                 const cardTitle = collection.title ?? videoItem.title;
                 const embedUrl = getYouTubeEmbedUrl(videoItem.url);
@@ -2945,22 +3111,15 @@ export default function Home() {
                 const cardClassName = videoItem.orientation === "portrait"
                   ? "video-card video-card-portrait"
                   : "video-card";
-                const shellClassName = videoItem.orientation === "portrait"
-                  ? "video-player-shell video-player-shell-portrait"
-                  : "video-player-shell";
 
                 return (
                   <article key={videoItem.key} className={cardClassName}>
-                    <div className={shellClassName}>
-                      <iframe
-                        src={embedUrl}
-                        title={collection.iframeTitle}
-                        loading="lazy"
-                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                        allowFullScreen
-                        referrerPolicy="strict-origin-when-cross-origin"
-                      />
-                    </div>
+                    <YouTubePlayer
+                      playerId={`video-${videoItem.key}`}
+                      embedUrl={embedUrl}
+                      iframeTitle={collection.iframeTitle}
+                      orientation={videoItem.orientation}
+                    />
 
                     <div className="video-card-content">
                       <h3>{cardTitle}</h3>
@@ -2979,32 +3138,59 @@ export default function Home() {
                 );
               })}
             </div>
+
+            {videoItems.length > 3 && (
+              <div className="section-show-more">
+                <button
+                  type="button"
+                  className="show-more-btn"
+                  aria-expanded={showAllVideo}
+                  onClick={() => {
+                    if (showAllVideo) {
+                      setShowAllVideo(false);
+                      const section = videoSectionRef.current;
+
+                      if (section) {
+                        const top = section.getBoundingClientRect().top + window.scrollY - 80;
+
+                        if (window.scrollY > top + 200) {
+                          window.scrollTo({ top, behavior: "smooth" });
+                        }
+                      }
+                    } else {
+                      setShowAllVideo(true);
+                    }
+                  }}
+                >
+                  {showAllVideo ? text.video.showLess : text.video.showAll}
+                </button>
+              </div>
+            )}
           </div>
         </section>
 
-        <section className="media-section audio-section" id="audio" aria-labelledby="audio-title">
+        <section ref={audioSectionRef} className="media-section audio-section" id="audio" aria-labelledby="audio-title">
           <div className="audio-section-inner">
             <p className="section-kicker">{text.audio.kicker}</p>
             <h2 id="audio-title">{text.audio.title}</h2>
             <p className="audio-intro">{text.audio.description}</p>
 
             <div className="audio-grid">
-              {audioCollections.map((collection) => {
+              {(showAllAudio ? audioCollections : audioCollections.slice(0, 3)).map((collection) => {
                 const embedUrl = `https://w.soundcloud.com/player/?url=${encodeURIComponent(collection.externalUrl)}&color=%23c8a64a&auto_play=false&hide_related=true&show_comments=false&show_user=true&show_reposts=false&show_teaser=false&visual=false`;
+                const tracklist = collection.tracklist ?? [];
+                const isTracklistOpen = openTracklistId === collection.id;
 
                 return (
                   <article key={collection.id} className="audio-card">
                     <h3>{collection.title}</h3>
                     <p>{collection.subtitle}</p>
 
-                    <div className="audio-player-shell">
-                      <iframe
-                        title={collection.iframeTitle}
-                        loading="lazy"
-                        allow="autoplay"
-                        src={embedUrl}
-                      />
-                    </div>
+                    <SoundCloudPlayer
+                      playerId={`audio-${collection.id}`}
+                      embedUrl={embedUrl}
+                      iframeTitle={collection.iframeTitle}
+                    />
 
                     <a
                       href={collection.externalUrl}
@@ -3014,10 +3200,67 @@ export default function Home() {
                     >
                       {text.audio.externalLinkText}
                     </a>
+
+                    {tracklist.length > 0 && (
+                      <button
+                        type="button"
+                        className="tracklist-toggle-btn"
+                        onClick={() =>
+                          setOpenTracklistId(isTracklistOpen ? null : collection.id)
+                        }
+                      >
+                        {isTracklistOpen
+                          ? text.audio.tracklistHide
+                          : text.audio.tracklistButton}
+                      </button>
+                    )}
+
+                    {tracklist.length > 0 && (
+                      <TracklistDialog
+                        isOpen={isTracklistOpen}
+                        title={collection.title}
+                        tracklist={tracklist}
+                        onClose={() => setOpenTracklistId(null)}
+                        labels={{
+                          dialogLabel: `${text.audio.tracklistHeading}: ${collection.title}`,
+                          closeLabel: text.audio.tracklistClose,
+                          exportLabel: text.audio.tracklistExport,
+                          tracklistHeading: text.audio.tracklistHeading,
+                        }}
+                      />
+                    )}
                   </article>
                 );
               })}
             </div>
+
+            {audioCollections.length > 3 && (
+              <div className="section-show-more">
+                <button
+                  type="button"
+                  className="show-more-btn"
+                  aria-expanded={showAllAudio}
+                  onClick={() => {
+                    if (showAllAudio) {
+                      setShowAllAudio(false);
+                      const section = audioSectionRef.current;
+
+                      if (section) {
+                        const top = section.getBoundingClientRect().top + window.scrollY - 80;
+
+                        if (window.scrollY > top + 200) {
+                          window.scrollTo({ top, behavior: "smooth" });
+                        }
+                      }
+                    } else {
+                      setShowAllAudio(true);
+                    }
+                  }}
+                >
+                  {showAllAudio ? text.audio.showLess : text.audio.showAll}
+                </button>
+              </div>
+            )}
           </div>
         </section>
 
@@ -3192,5 +3435,6 @@ export default function Home() {
 
       <BackToTop ariaLabel={backToTopLabels[language]} targetId="home" />
     </main>
+    </MediaPlaybackProvider>
   );
 }

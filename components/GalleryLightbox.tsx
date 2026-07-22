@@ -35,12 +35,14 @@ type GalleryLightboxProps = {
   items: GalleryItem[];
   narrative: GalleryNarrative;
   labels: GalleryLightboxLabels;
+  onOpen?: () => void;
 };
 
 export default function GalleryLightbox({
   items,
   narrative,
   labels,
+  onOpen,
 }: GalleryLightboxProps) {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
   const [zoom, setZoom] = useState(1);
@@ -315,6 +317,7 @@ export default function GalleryLightbox({
 
     resetZoomState();
     setActiveIndex(index);
+    onOpen?.();
   }
 
   function renderItemButton(item: GalleryItem, index: number) {
