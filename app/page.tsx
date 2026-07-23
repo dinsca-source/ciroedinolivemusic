@@ -152,8 +152,11 @@ type Translation = {
     kicker: string;
     title: string;
     description: string;
-    showAll: string;
-    showLess: string;
+    youtubeCta: {
+      title: string;
+      text: string;
+      button: string;
+    };
     collections: {
       ymca: {
         title?: string;
@@ -395,26 +398,14 @@ const initialContactFormData: ContactFormData = {
 };
 
 type VideoItemKey =
-  | "ymca"
-  | "figliDelleStelle"
-  | "staserachesera"
-  | "rossettoECaffe"
   | "circoloForestieriShorts"
+  | "ymca"
+  | "volare"
   | "somewhereOverTheRainbow"
   | "unforgettable"
   | "oiMari"
-  | "stopBajon"
-  | "stayingAlive"
   | "quandoQuando"
-  | "perUnOraDAmore"
-  | "thisMasquerade"
-  | "quellaCarezzaDellaSera"
-  | "ilCieloInUnaStanza"
-  | "guardaCheLuna"
-  | "georgiaOnMyMind"
-  | "volare"
-  | "ePensoATe"
-  | "mamboItaliano";
+  | "thisMasquerade";
 
 type VideoOrientation = "landscape" | "portrait";
 
@@ -425,33 +416,21 @@ const videoItems: Array<{
   orientation: VideoOrientation;
 }> = [
   {
+    key: "circoloForestieriShorts",
+    title: "Dino & Ciro ed il Circolo dei Forestieri",
+    url: "https://youtube.com/shorts/QHTufT0ldyE?feature=share",
+    orientation: "portrait",
+  },
+  {
     key: "ymca",
     title: "YMCA",
     url: "https://youtu.be/SoL-Ea-7saw",
     orientation: "landscape",
   },
   {
-    key: "figliDelleStelle",
-    title: "Figli delle Stelle",
-    url: "https://youtu.be/vByRPZXEuUc",
-    orientation: "landscape",
-  },
-  {
-    key: "staserachesera",
-    title: "Stasera che sera",
-    url: "https://youtu.be/Mde58mxxKbE",
-    orientation: "landscape",
-  },
-  {
-    key: "rossettoECaffe",
-    title: "Rossetto e Caffè",
-    url: "https://youtu.be/6VYUqA0_POc",
-    orientation: "landscape",
-  },
-  {
-    key: "circoloForestieriShorts",
-    title: "Ciro & Dino al Circolo dei Forestieri",
-    url: "https://youtube.com/shorts/QHTufT0ldyE?feature=share",
+    key: "volare",
+    title: "Volare",
+    url: "https://youtube.com/shorts/OmFze9c3P5g?feature=share",
     orientation: "portrait",
   },
   {
@@ -473,27 +452,9 @@ const videoItems: Array<{
     orientation: "landscape",
   },
   {
-    key: "stopBajon",
-    title: "Stop Bajon",
-    url: "https://youtu.be/4pN0QpVZ4zs",
-    orientation: "landscape",
-  },
-  {
-    key: "stayingAlive",
-    title: "Staying Alive",
-    url: "https://youtube.com/shorts/D0PFt9mzmEw?feature=share",
-    orientation: "portrait",
-  },
-  {
     key: "quandoQuando",
     title: "Quando Quando",
     url: "https://youtu.be/RZ5FNbS0vbI",
-    orientation: "landscape",
-  },
-  {
-    key: "perUnOraDAmore",
-    title: "Per un'ora d'amore",
-    url: "https://youtu.be/OK9qIBsnQGw",
     orientation: "landscape",
   },
   {
@@ -502,49 +463,9 @@ const videoItems: Array<{
     url: "https://youtu.be/VyTWvpS4WZo",
     orientation: "landscape",
   },
-  {
-    key: "quellaCarezzaDellaSera",
-    title: "Quella carezza della sera",
-    url: "https://youtu.be/ZWdDlQ_uHME",
-    orientation: "landscape",
-  },
-  {
-    key: "ilCieloInUnaStanza",
-    title: "Il cielo in una stanza",
-    url: "https://youtube.com/shorts/Q2v-H9woD80?feature=share",
-    orientation: "portrait",
-  },
-  {
-    key: "guardaCheLuna",
-    title: "Guarda che luna",
-    url: "https://youtube.com/shorts/K8fg7Jb2IGY?feature=share",
-    orientation: "portrait",
-  },
-  {
-    key: "georgiaOnMyMind",
-    title: "Georgia on my mind",
-    url: "https://youtube.com/shorts/jLaFiB3r1BE?feature=share",
-    orientation: "portrait",
-  },
-  {
-    key: "volare",
-    title: "Volare",
-    url: "https://youtube.com/shorts/OmFze9c3P5g?feature=share",
-    orientation: "portrait",
-  },
-  {
-    key: "ePensoATe",
-    title: "E penso a te",
-    url: "https://youtu.be/PRjxHntwHAI",
-    orientation: "landscape",
-  },
-  {
-    key: "mamboItaliano",
-    title: "Mambo Italiano",
-    url: "https://youtube.com/shorts/VbufCNBA1fU?feature=share",
-    orientation: "portrait",
-  },
 ];
+
+const youtubeChannelUrl = "https://www.youtube.com/@CiroDinoLiveMusic";
 
 function getYouTubeId(videoUrl: string): string | null {
   try {
@@ -949,8 +870,11 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Guarda su YouTube",
-      showAll: "Mostra tutti i video",
-      showLess: "Mostra meno video",
+      youtubeCta: {
+        title: "Scopri tutti i nostri video",
+        text: "Sul nostro canale YouTube trovi molte altre performance dal vivo, nuovi video e aggiornamenti.",
+        button: "Visita il nostro canale YouTube",
+      },
     },
     audio: {
       kicker: "AUDIO",
@@ -1297,8 +1221,11 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Watch on YouTube",
-      showAll: "Show all videos",
-      showLess: "Show fewer videos",
+      youtubeCta: {
+        title: "Discover all our videos",
+        text: "Visit our YouTube channel to watch many more live performances, new videos and updates.",
+        button: "Visit our YouTube channel",
+      },
     },
     audio: {
       kicker: "AUDIO",
@@ -1645,8 +1572,11 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Regarder sur YouTube",
-      showAll: "Voir toutes les vidéos",
-      showLess: "Voir moins de vidéos",
+      youtubeCta: {
+        title: "Découvrez toutes nos vidéos",
+        text: "Retrouvez sur notre chaîne YouTube de nombreuses performances live, de nouvelles vidéos et toutes nos nouveautés.",
+        button: "Visiter notre chaîne YouTube",
+      },
     },
     audio: {
       kicker: "AUDIO",
@@ -1993,8 +1923,11 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Ver en YouTube",
-      showAll: "Ver todos los vídeos",
-      showLess: "Ver menos vídeos",
+      youtubeCta: {
+        title: "Descubre todos nuestros vídeos",
+        text: "En nuestro canal de YouTube encontrarás muchas más actuaciones en directo, nuevos vídeos y novedades.",
+        button: "Visitar nuestro canal de YouTube",
+      },
     },
     audio: {
       kicker: "AUDIO",
@@ -2341,8 +2274,11 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Auf YouTube ansehen",
-      showAll: "Alle Videos anzeigen",
-      showLess: "Weniger Videos anzeigen",
+      youtubeCta: {
+        title: "Entdecke alle unsere Videos",
+        text: "Auf unserem YouTube-Kanal findest du viele weitere Live-Auftritte, neue Videos und aktuelle Neuigkeiten.",
+        button: "Unseren YouTube-Kanal besuchen",
+      },
     },
     audio: {
       kicker: "AUDIO",
@@ -2689,8 +2625,11 @@ const translations: Record<LanguageCode, Translation> = {
         },
       },
       externalLinkText: "Смотреть на YouTube",
-      showAll: "Показать все видео",
-      showLess: "Показать меньше видео",
+      youtubeCta: {
+        title: "Откройте все наши видео",
+        text: "На нашем YouTube-канале вас ждут новые live-выступления, свежие видео и все обновления.",
+        button: "Перейти на наш YouTube-канал",
+      },
     },
     audio: {
       kicker: "АУДИО",
@@ -2801,10 +2740,8 @@ export default function Home() {
     Partial<Record<"fullName" | "email" | "eventType" | "message" | "consent", string>>
   >({});
   const [minEventDate] = useState(() => new Date().toISOString().split("T")[0]);
-  const [showAllVideo, setShowAllVideo] = useState(false);
   const [showAllAudio, setShowAllAudio] = useState(false);
   const [openTracklistId, setOpenTracklistId] = useState<string | null>(null);
-  const videoSectionRef = useRef<HTMLElement>(null);
   const audioSectionRef = useRef<HTMLElement>(null);
   const text = translations[language];
   const percorsoAltByLanguage: Record<LanguageCode, string[]> = {
@@ -2913,7 +2850,7 @@ export default function Home() {
     },
     {
       id: "gallery-05-duo-live-sunset",
-      src: "/gallery/gallery-05-duo-live-sunset.webp",
+      src: "/gallery/gallery-05-duo-live-sunset_v1.webp",
       alt: text.gallery.imageAlts.liveSunset,
       variant: "live" as const,
       openLabel: `${text.gallery.openImageAriaLabel}: ${text.gallery.imageAlts.liveSunset}`,
@@ -3582,14 +3519,14 @@ export default function Home() {
           </div>
         </section>
 
-        <section ref={videoSectionRef} className="content-section video-section" id="video" aria-labelledby="video-title">
+        <section className="content-section video-section" id="video" aria-labelledby="video-title">
           <div className="content-section-inner video-section-inner">
             <p className="section-kicker">{text.video.kicker}</p>
             <h2 id="video-title">{text.video.title}</h2>
             <p className="video-intro">{text.video.description}</p>
 
             <div className="video-grid">
-              {(showAllVideo ? videoItems : videoItems.slice(0, 3)).map((videoItem) => {
+              {videoItems.map((videoItem) => {
                 const collection = text.video.collections[videoItem.key];
                 const cardTitle = collection.title ?? videoItem.title;
                 const youtubeId = getYouTubeId(videoItem.url);
@@ -3632,33 +3569,32 @@ export default function Home() {
               })}
             </div>
 
-            {videoItems.length > 3 && (
-              <div className="section-show-more">
-                <button
-                  type="button"
-                  className="show-more-btn"
-                  aria-expanded={showAllVideo}
-                  onClick={() => {
-                    if (showAllVideo) {
-                      setShowAllVideo(false);
-                      const section = videoSectionRef.current;
+            <div className="video-youtube-cta" aria-label={text.video.youtubeCta.title}>
+              <div className="video-youtube-cta-copy">
+                <span className="video-youtube-icon" aria-hidden="true">
+                  <svg viewBox="0 0 96 68" role="presentation" focusable="false" aria-hidden="true">
+                    <rect x="1" y="1" width="94" height="66" rx="16" fill="#ff0000" />
+                    <path d="M40 20.5 65.5 34 40 47.5z" fill="#ffffff" />
+                  </svg>
+                </span>
 
-                      if (section) {
-                        const top = section.getBoundingClientRect().top + window.scrollY - 80;
-
-                        if (window.scrollY > top + 200) {
-                          window.scrollTo({ top, behavior: "smooth" });
-                        }
-                      }
-                    } else {
-                      setShowAllVideo(true);
-                    }
-                  }}
-                >
-                  {showAllVideo ? text.video.showLess : text.video.showAll}
-                </button>
+                <div>
+                  <h3>{text.video.youtubeCta.title}</h3>
+                  <p>{text.video.youtubeCta.text}</p>
+                </div>
               </div>
-            )}
+
+              <a
+                href={youtubeChannelUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                <span>{text.video.youtubeCta.button}</span>
+                <svg viewBox="0 0 24 24" role="presentation" focusable="false" aria-hidden="true">
+                  <path d="M14 3h7v7h-2V6.41l-9.29 9.3-1.42-1.42 9.3-9.29H14V3ZM5 5h6v2H7v10h10v-4h2v6H5V5Z" />
+                </svg>
+              </a>
+            </div>
           </div>
         </section>
 
