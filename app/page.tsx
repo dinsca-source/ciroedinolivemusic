@@ -1100,7 +1100,7 @@ const translations: Record<LanguageCode, Translation> = {
       kicker: "Live experience",
       title: "Our live music",
       description:
-        "Here we will publish a selection of videos showing the energy, elegance and audience engagement of our performances.",
+        "Here we will publish a selection of videos showcasing the energy, elegance and engaging atmosphere of our live performances. These videos were also made possible thanks to the kind cooperation of our clients, who generously allowed us to share some special moments from their events.",
       collections: {
         ymca: {
           subtitle: "An energetic and instantly recognisable track, perfect for bringing momentum and audience connection.",
@@ -1451,7 +1451,7 @@ const translations: Record<LanguageCode, Translation> = {
       kicker: "Expérience live",
       title: "Notre musique en direct",
       description:
-        "Nous publierons ici une sélection de vidéos illustrant l’énergie, l’élégance et la participation du public pendant nos spectacles.",
+        "Nous publierons ici une sélection de vidéos afin de faire découvrir l'énergie, l'élégance et l'ambiance chaleureuse de nos prestations. Ces vidéos ont également pu être réalisées grâce à l'aimable collaboration de nos clients, qui nous ont généreusement autorisés à partager quelques moments de leurs soirées.",
       collections: {
         ymca: {
           subtitle: "Un morceau énergique et immédiatement reconnaissable, parfait pour transmettre élan et participation.",
@@ -1802,7 +1802,7 @@ const translations: Record<LanguageCode, Translation> = {
       kicker: "Experiencia en vivo",
       title: "Nuestra música en directo",
       description:
-        "Aquí publicaremos una selección de vídeos que muestran la energía, la elegancia y la participación del público en nuestras actuaciones.",
+        "Aquí publicaremos una selección de vídeos para mostrar la energía, la elegancia y el ambiente participativo de nuestras actuaciones. Estos vídeos también han sido posibles gracias a la amable colaboración de nuestros clientes, quienes nos autorizaron generosamente a compartir algunos momentos de sus celebraciones.",
       collections: {
         ymca: {
           subtitle: "Un tema enérgico e inmediatamente reconocible, perfecto para transmitir impulso y participación.",
@@ -2153,7 +2153,7 @@ const translations: Record<LanguageCode, Translation> = {
       kicker: "Live-Erlebnis",
       title: "Unsere Live-Musik",
       description:
-        "Hier veröffentlichen wir eine Auswahl an Videos, die die Energie, Eleganz und Publikumsnähe unserer Auftritte zeigen.",
+        "Hier veröffentlichen wir eine Auswahl an Videos, die die Energie, Eleganz und mitreißende Atmosphäre unserer Auftritte vermitteln. Diese Aufnahmen wurden auch durch die freundliche Unterstützung unserer Kunden ermöglicht, die uns großzügigerweise gestattet haben, einige besondere Momente ihrer Veranstaltungen zu teilen.",
       collections: {
         ymca: {
           subtitle: "Ein energiegeladener und sofort wiedererkennbarer Titel, perfekt für Schwung und Publikumsnähe.",
