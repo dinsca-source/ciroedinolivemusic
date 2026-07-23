@@ -749,7 +749,7 @@ const translations: Record<LanguageCode, Translation> = {
       kicker: "Live experience",
       title: "La nostra musica dal vivo",
       description:
-        "Qui pubblicheremo una selezione di video per raccontare l’energia, l’eleganza e il coinvolgimento delle nostre esibizioni.",
+        "Qui pubblicheremo una selezione di video per raccontare l'energia, l'eleganza e il coinvolgimento delle nostre esibizioni. I filmati presenti sono stati realizzati anche grazie alla cortese disponibilità dei nostri clienti, che ci hanno gentilmente autorizzato a condividere alcuni momenti delle loro serate.",
       collections: {
         ymca: {
           subtitle: "Un brano energico e riconoscibile, perfetto per trasmettere slancio e partecipazione.",
@@ -2821,7 +2821,7 @@ export default function Home() {
   const galleryItems = [
     {
       id: "gallery-01-momenti-dal-vivo-01",
-      src: "/images/Live/momenti-dal-vivo-02.webp",
+      src: "/images/Live/momenti-dal-vivo-03.webp",
       alt: text.gallery.imageAlts.livePanorama,
       variant: "hero" as const,
       priority: true,
