@@ -1972,6 +1972,37 @@ a {
 }
 
 @media (max-width: 850px) and (orientation: portrait) {
+  .language-intro::before {
+    content: "";
+    position: absolute;
+    inset: -8%;
+    z-index: -5;
+    background: url("/images/hero.jpg") center 32% / cover no-repeat;
+    filter: blur(18px) brightness(0.72);
+    transform: scale(1.12);
+    pointer-events: none;
+  }
+
+  .language-intro-image img {
+    object-fit: contain;
+    object-position: center center;
+  }
+
+  .language-intro-overlay {
+    background:
+      radial-gradient(
+        circle at center,
+        rgba(0, 0, 0, 0.16) 12%,
+        rgba(0, 0, 0, 0.58) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.58) 0%,
+        rgba(0, 0, 0, 0.2) 46%,
+        rgba(0, 0, 0, 0.74) 100%
+      );
+  }
+
   .hero::before {
     content: "";
     position: absolute;
@@ -2023,6 +2054,10 @@ a {
 }
 
 @media (max-width: 420px) and (orientation: portrait) {
+  .language-intro-image img {
+    object-position: center 45%;
+  }
+
   .hero-image img {
     object-position: center 45%;
   }
@@ -2654,15 +2689,31 @@ a {
   }
 
   .language-intro-image {
-    display: none;
+    animation: none;
   }
 
   .language-intro-overlay {
-    display: none;
+    background:
+      radial-gradient(
+        circle at center,
+        rgba(0, 0, 0, 0.26) 0%,
+        rgba(0, 0, 0, 0.56) 100%
+      ),
+      linear-gradient(
+        180deg,
+        rgba(0, 0, 0, 0.5),
+        rgba(0, 0, 0, 0.28) 40%,
+        rgba(0, 0, 0, 0.75)
+      );
   }
 
   .intro-light {
     display: none;
+  }
+
+  .language-intro-image img {
+    object-fit: contain;
+    object-position: center center;
   }
 
   .language-intro-content {

@@ -25,6 +25,7 @@ type SCWidgetInstance = {
 };
 
 const SC_EVENTS = {
+  READY: "ready",
   PLAY: "play",
 };
 
@@ -67,15 +68,26 @@ export default function SoundCloudPlayer({
 }: Props) {
   const iframeRef = useRef<HTMLIFrameElement>(null);
   const widgetRef = useRef<SCWidgetInstance | null>(null);
+  const pauseRef = useRef<() => void>(() => {});
+  const registeredRef = useRef(false);
   const mountedRef = useRef(true);
-  const currentStateRef = useRef<{ playerId: string; notifyPlaying: (id: string) => void }>({ playerId, notifyPlaying: () => {} });
-
   const { register, unregister, notifyPlaying } = useMediaPlayback();
+  const currentStateRef = useRef({
+    playerId,
+    notifyPlaying,
+    register,
+    unregister,
+  });
 
   // Keep currentStateRef in sync with latest values
   useEffect(() => {
-    currentStateRef.current = { playerId, notifyPlaying };
-  }, [playerId, notifyPlaying]);
+    currentStateRef.current = {
+      playerId,
+      notifyPlaying,
+      register,
+      unregister,
+    };
+  }, [playerId, notifyPlaying, register, unregister]);
 
   const pause = useCallback(() => {
     try {
@@ -88,12 +100,30 @@ export default function SoundCloudPlayer({
   }, []);
 
   useEffect(() => {
-    register(playerId, pause);
+    pauseRef.current = pause;
+  }, [pause]);
 
-    return () => {
-      unregister(playerId);
-    };
-  }, [playerId, pause, register, unregister]);
+  const ensureRegistered = useCallback(() => {
+    if (registeredRef.current) {
+      return;
+    }
+
+    const { playerId: currentPlayerId, register: currentRegister } = currentStateRef.current;
+    currentRegister(currentPlayerId, () => {
+      pauseRef.current();
+    });
+    registeredRef.current = true;
+  }, []);
+
+  const cleanupRegistration = useCallback(() => {
+    if (!registeredRef.current) {
+      return;
+    }
+
+    const { playerId: currentPlayerId, unregister: currentUnregister } = currentStateRef.current;
+    currentUnregister(currentPlayerId);
+    registeredRef.current = false;
+  }, []);
 
   useEffect(() => {
     mountedRef.current = true;
@@ -107,6 +137,10 @@ export default function SoundCloudPlayer({
         const widget = window.SC.Widget(iframeRef.current);
         widgetRef.current = widget;
 
+        widget.bind(SC_EVENTS.READY, () => {
+          ensureRegistered();
+        });
+
         widget.bind(SC_EVENTS.PLAY, () => {
           const { playerId: currentPlayerId, notifyPlaying: currentNotifyPlaying } = currentStateRef.current;
           currentNotifyPlaying(currentPlayerId);
@@ -118,8 +152,10 @@ export default function SoundCloudPlayer({
 
     return () => {
       mountedRef.current = false;
+      cleanupRegistration();
 
       try {
+        widgetRef.current?.unbind(SC_EVENTS.READY);
         widgetRef.current?.unbind(SC_EVENTS.PLAY);
       } catch {
         // ignore
@@ -127,7 +163,7 @@ export default function SoundCloudPlayer({
 
       widgetRef.current = null;
     };
-  }, []);
+  }, [cleanupRegistration, ensureRegistered]);
 
   return (
     <div className="audio-player-shell">

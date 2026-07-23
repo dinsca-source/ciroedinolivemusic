@@ -15,6 +15,7 @@ declare global {
         elementId: string,
         options: {
           events: {
+            onReady?: () => void;
             onStateChange?: (event: { data: number }) => void;
           };
         },
@@ -80,13 +81,27 @@ export default function YouTubePlayer({
 
   const { register, unregister, notifyPlaying } = useMediaPlayback();
   const playerRef = useRef<YTPlayerInstance | null>(null);
+  const iframeLoadHandlerRef = useRef<(() => void) | null>(null);
+  const pauseRef = useRef<() => void>(() => {});
+  const registeredRef = useRef(false);
+  const initStartedRef = useRef(false);
   const mountedRef = useRef(true);
-  const currentStateRef = useRef({ playerId, notifyPlaying });
+  const currentStateRef = useRef({
+    playerId,
+    notifyPlaying,
+    register,
+    unregister,
+  });
 
-  // Keep currentStateRef in sync with latest playerId and notifyPlaying
+  // Keep current refs aligned with latest callbacks and IDs to avoid stale closures.
   useEffect(() => {
-    currentStateRef.current = { playerId, notifyPlaying };
-  }, [playerId, notifyPlaying]);
+    currentStateRef.current = {
+      playerId,
+      notifyPlaying,
+      register,
+      unregister,
+    };
+  }, [playerId, notifyPlaying, register, unregister]);
 
   // The embed URL needs enablejsapi=1 to work with the IFrame API
   const apiUrl = embedUrl.includes("?")
@@ -97,6 +112,19 @@ export default function YouTubePlayer({
     try {
       if (playerRef.current && typeof playerRef.current.pauseVideo === "function") {
         playerRef.current.pauseVideo();
+        return;
+      }
+
+      // Fallback for edge cases where iframe is playable but Player API isn't ready yet.
+      if (iframeRef.current?.contentWindow) {
+        iframeRef.current.contentWindow.postMessage(
+          JSON.stringify({
+            event: "command",
+            func: "pauseVideo",
+            args: [],
+          }),
+          "*",
+        );
       }
     } catch {
       // Player may have been destroyed or not yet initialised
@@ -104,45 +132,102 @@ export default function YouTubePlayer({
   }, []);
 
   useEffect(() => {
-    register(playerId, pause);
+    pauseRef.current = pause;
+  }, [pause]);
 
-    return () => {
-      unregister(playerId);
-    };
-  }, [playerId, pause, register, unregister]);
+  const ensureRegistered = useCallback(() => {
+    if (registeredRef.current) {
+      return;
+    }
+
+    const { playerId: currentPlayerId, register: currentRegister } = currentStateRef.current;
+    currentRegister(currentPlayerId, () => {
+      pauseRef.current();
+    });
+    registeredRef.current = true;
+  }, []);
+
+  const cleanupRegistration = useCallback(() => {
+    if (!registeredRef.current) {
+      return;
+    }
+
+    const { playerId: currentPlayerId, unregister: currentUnregister } = currentStateRef.current;
+    currentUnregister(currentPlayerId);
+    registeredRef.current = false;
+  }, []);
+
+  const initPlayer = useCallback((YT: NonNullable<typeof window.YT>) => {
+    if (!mountedRef.current || !iframeRef.current || !YT || initStartedRef.current) {
+      return;
+    }
+
+    const iframeId = iframeRef.current.id;
+    if (!iframeId) {
+      console.warn("YouTubePlayer: iframe has no ID");
+      return;
+    }
+
+    initStartedRef.current = true;
+
+    try {
+      const player = new YT.Player(iframeId, {
+        events: {
+          onReady() {
+            ensureRegistered();
+          },
+          onStateChange(event) {
+            if (YT && event.data === YT.PlayerState.PLAYING) {
+              const {
+                playerId: currentPlayerId,
+                notifyPlaying: currentNotifyPlaying,
+              } = currentStateRef.current;
+              currentNotifyPlaying(currentPlayerId);
+            }
+          },
+        },
+      });
+
+      playerRef.current = player;
+    } catch (error) {
+      initStartedRef.current = false;
+      console.error("YouTubePlayer: failed to create player", error);
+    }
+  }, [ensureRegistered]);
 
   useEffect(() => {
     mountedRef.current = true;
+    initStartedRef.current = false;
+    const iframeElement = iframeRef.current;
 
     loadYouTubeApi()
       .then((YT) => {
-        if (!mountedRef.current || !iframeRef.current || !YT) {
+        if (!mountedRef.current || !YT) {
           return;
         }
 
-        // Get the iframe's ID for the Player constructor
-        const iframeId = iframeRef.current.id;
+        initPlayer(YT);
 
-        if (!iframeId) {
-          console.warn("YouTubePlayer: iframe has no ID");
+        if (!iframeElement) {
           return;
         }
 
-        try {
-          const player = new YT.Player(iframeId, {
-            events: {
-              onStateChange(event) {
-                const { playerId: currentPlayerId, notifyPlaying: currentNotifyPlaying } = currentStateRef.current;
-                if (YT && event.data === YT.PlayerState.PLAYING) {
-                  currentNotifyPlaying(currentPlayerId);
-                }
-              },
-            },
-          });
+        const handleIframeLoad = () => {
+          if (!window.YT) {
+            return;
+          }
 
-          playerRef.current = player;
-        } catch (error) {
-          console.error("YouTubePlayer: failed to create player", error);
+          initPlayer(window.YT);
+        };
+
+        iframeLoadHandlerRef.current = handleIframeLoad;
+        iframeElement.addEventListener("load", handleIframeLoad);
+
+        // In case the iframe is already loaded before listener attachment.
+        handleIframeLoad();
+
+        if (!mountedRef.current) {
+          iframeElement.removeEventListener("load", handleIframeLoad);
         }
       })
       .catch((error) => {
@@ -151,6 +236,12 @@ export default function YouTubePlayer({
 
     return () => {
       mountedRef.current = false;
+      cleanupRegistration();
+
+      if (iframeElement && iframeLoadHandlerRef.current) {
+        iframeElement.removeEventListener("load", iframeLoadHandlerRef.current);
+      }
+      iframeLoadHandlerRef.current = null;
 
       try {
         if (playerRef.current) {
@@ -161,8 +252,9 @@ export default function YouTubePlayer({
       }
 
       playerRef.current = null;
+      initStartedRef.current = false;
     };
-  }, [playerId]);
+  }, [cleanupRegistration, initPlayer, playerId]);
 
   const shellClass =
     orientation === "portrait"

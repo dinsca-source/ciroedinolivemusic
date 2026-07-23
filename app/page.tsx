@@ -215,6 +215,66 @@ type Translation = {
         iframeTitle: string;
         externalAriaLabel: string;
       };
+      quandoQuando: {
+        title: string;
+        subtitle: string;
+        iframeTitle: string;
+        externalAriaLabel: string;
+      };
+      perUnOraDAmore: {
+        title: string;
+        subtitle: string;
+        iframeTitle: string;
+        externalAriaLabel: string;
+      };
+      thisMasquerade: {
+        title: string;
+        subtitle: string;
+        iframeTitle: string;
+        externalAriaLabel: string;
+      };
+      quellaCarezzaDellaSera: {
+        title: string;
+        subtitle: string;
+        iframeTitle: string;
+        externalAriaLabel: string;
+      };
+      ilCieloInUnaStanza: {
+        title: string;
+        subtitle: string;
+        iframeTitle: string;
+        externalAriaLabel: string;
+      };
+      guardaCheLuna: {
+        title: string;
+        subtitle: string;
+        iframeTitle: string;
+        externalAriaLabel: string;
+      };
+      georgiaOnMyMind: {
+        title: string;
+        subtitle: string;
+        iframeTitle: string;
+        externalAriaLabel: string;
+      };
+      volare: {
+        title: string;
+        subtitle: string;
+        iframeTitle: string;
+        externalAriaLabel: string;
+      };
+      ePensoATe: {
+        title: string;
+        subtitle: string;
+        iframeTitle: string;
+        externalAriaLabel: string;
+      };
+      mamboItaliano: {
+        title: string;
+        subtitle: string;
+        iframeTitle: string;
+        externalAriaLabel: string;
+      };
     };
     externalLinkText: string;
   };
@@ -344,7 +404,17 @@ type VideoItemKey =
   | "unforgettable"
   | "oiMari"
   | "stopBajon"
-  | "stayingAlive";
+  | "stayingAlive"
+  | "quandoQuando"
+  | "perUnOraDAmore"
+  | "thisMasquerade"
+  | "quellaCarezzaDellaSera"
+  | "ilCieloInUnaStanza"
+  | "guardaCheLuna"
+  | "georgiaOnMyMind"
+  | "volare"
+  | "ePensoATe"
+  | "mamboItaliano";
 
 type VideoOrientation = "landscape" | "portrait";
 
@@ -412,6 +482,66 @@ const videoItems: Array<{
     key: "stayingAlive",
     title: "Staying Alive",
     url: "https://youtube.com/shorts/D0PFt9mzmEw?feature=share",
+    orientation: "portrait",
+  },
+  {
+    key: "quandoQuando",
+    title: "Quando Quando",
+    url: "https://youtu.be/RZ5FNbS0vbI",
+    orientation: "landscape",
+  },
+  {
+    key: "perUnOraDAmore",
+    title: "Per un'ora d'amore",
+    url: "https://youtu.be/OK9qIBsnQGw",
+    orientation: "landscape",
+  },
+  {
+    key: "thisMasquerade",
+    title: "This Masquerade",
+    url: "https://youtu.be/VyTWvpS4WZo",
+    orientation: "landscape",
+  },
+  {
+    key: "quellaCarezzaDellaSera",
+    title: "Quella carezza della sera",
+    url: "https://youtu.be/ZWdDlQ_uHME",
+    orientation: "landscape",
+  },
+  {
+    key: "ilCieloInUnaStanza",
+    title: "Il cielo in una stanza",
+    url: "https://youtube.com/shorts/Q2v-H9woD80?feature=share",
+    orientation: "portrait",
+  },
+  {
+    key: "guardaCheLuna",
+    title: "Guarda che luna",
+    url: "https://youtube.com/shorts/K8fg7Jb2IGY?feature=share",
+    orientation: "portrait",
+  },
+  {
+    key: "georgiaOnMyMind",
+    title: "Georgia on my mind",
+    url: "https://youtube.com/shorts/jLaFiB3r1BE?feature=share",
+    orientation: "portrait",
+  },
+  {
+    key: "volare",
+    title: "Volare",
+    url: "https://youtube.com/shorts/OmFze9c3P5g?feature=share",
+    orientation: "portrait",
+  },
+  {
+    key: "ePensoATe",
+    title: "E penso a te",
+    url: "https://youtu.be/PRjxHntwHAI",
+    orientation: "landscape",
+  },
+  {
+    key: "mamboItaliano",
+    title: "Mambo Italiano",
+    url: "https://youtube.com/shorts/VbufCNBA1fU?feature=share",
     orientation: "portrait",
   },
 ];
@@ -757,6 +887,66 @@ const translations: Record<LanguageCode, Translation> = {
           iframeTitle: "Short YouTube di Staying Alive",
           externalAriaLabel: "Guarda Staying Alive su YouTube in una nuova scheda",
         },
+        quandoQuando: {
+          title: "Quando Quando",
+          subtitle: "Quando Quando",
+          iframeTitle: "Video YouTube di Quando Quando",
+          externalAriaLabel: "Guarda Quando Quando su YouTube in una nuova scheda",
+        },
+        perUnOraDAmore: {
+          title: "Per un'ora d'amore",
+          subtitle: "Per un'ora d'amore",
+          iframeTitle: "Video YouTube di Per un'ora d'amore",
+          externalAriaLabel: "Guarda Per un'ora d'amore su YouTube in una nuova scheda",
+        },
+        thisMasquerade: {
+          title: "This Masquerade",
+          subtitle: "This Masquerade",
+          iframeTitle: "Video YouTube di This Masquerade",
+          externalAriaLabel: "Guarda This Masquerade su YouTube in una nuova scheda",
+        },
+        quellaCarezzaDellaSera: {
+          title: "Quella carezza della sera",
+          subtitle: "Quella carezza della sera",
+          iframeTitle: "Video YouTube di Quella carezza della sera",
+          externalAriaLabel: "Guarda Quella carezza della sera su YouTube in una nuova scheda",
+        },
+        ilCieloInUnaStanza: {
+          title: "Il cielo in una stanza",
+          subtitle: "Il cielo in una stanza",
+          iframeTitle: "Short YouTube di Il cielo in una stanza",
+          externalAriaLabel: "Guarda Il cielo in una stanza su YouTube in una nuova scheda",
+        },
+        guardaCheLuna: {
+          title: "Guarda che luna",
+          subtitle: "Guarda che luna",
+          iframeTitle: "Short YouTube di Guarda che luna",
+          externalAriaLabel: "Guarda che luna su YouTube in una nuova scheda",
+        },
+        georgiaOnMyMind: {
+          title: "Georgia on my mind",
+          subtitle: "Georgia on my mind",
+          iframeTitle: "Short YouTube di Georgia on my mind",
+          externalAriaLabel: "Guarda Georgia on my mind su YouTube in una nuova scheda",
+        },
+        volare: {
+          title: "Volare",
+          subtitle: "Volare",
+          iframeTitle: "Short YouTube di Volare",
+          externalAriaLabel: "Guarda Volare su YouTube in una nuova scheda",
+        },
+        ePensoATe: {
+          title: "E penso a te",
+          subtitle: "E penso a te",
+          iframeTitle: "Video YouTube di E penso a te",
+          externalAriaLabel: "Guarda E penso a te su YouTube in una nuova scheda",
+        },
+        mamboItaliano: {
+          title: "Mambo Italiano",
+          subtitle: "Mambo Italiano",
+          iframeTitle: "Short YouTube di Mambo Italiano",
+          externalAriaLabel: "Guarda Mambo Italiano su YouTube in una nuova scheda",
+        },
       },
       externalLinkText: "Guarda su YouTube",
       showAll: "Mostra tutti i video",
@@ -1044,6 +1234,66 @@ const translations: Record<LanguageCode, Translation> = {
           subtitle: "Instant dance energy to lift the evening.",
           iframeTitle: "YouTube Short of Staying Alive",
           externalAriaLabel: "Watch Staying Alive on YouTube in a new tab",
+        },
+        quandoQuando: {
+          title: "Quando Quando",
+          subtitle: "Quando Quando",
+          iframeTitle: "YouTube video of Quando Quando",
+          externalAriaLabel: "Watch Quando Quando on YouTube in a new tab",
+        },
+        perUnOraDAmore: {
+          title: "Per un'ora d'amore",
+          subtitle: "Per un'ora d'amore",
+          iframeTitle: "YouTube video of Per un'ora d'amore",
+          externalAriaLabel: "Watch Per un'ora d'amore on YouTube in a new tab",
+        },
+        thisMasquerade: {
+          title: "This Masquerade",
+          subtitle: "This Masquerade",
+          iframeTitle: "YouTube video of This Masquerade",
+          externalAriaLabel: "Watch This Masquerade on YouTube in a new tab",
+        },
+        quellaCarezzaDellaSera: {
+          title: "Quella carezza della sera",
+          subtitle: "Quella carezza della sera",
+          iframeTitle: "YouTube video of Quella carezza della sera",
+          externalAriaLabel: "Watch Quella carezza della sera on YouTube in a new tab",
+        },
+        ilCieloInUnaStanza: {
+          title: "Il cielo in una stanza",
+          subtitle: "Il cielo in una stanza",
+          iframeTitle: "YouTube Short of Il cielo in una stanza",
+          externalAriaLabel: "Watch Il cielo in una stanza on YouTube in a new tab",
+        },
+        guardaCheLuna: {
+          title: "Guarda che luna",
+          subtitle: "Guarda che luna",
+          iframeTitle: "YouTube Short of Guarda che luna",
+          externalAriaLabel: "Watch Guarda che luna on YouTube in a new tab",
+        },
+        georgiaOnMyMind: {
+          title: "Georgia on my mind",
+          subtitle: "Georgia on my mind",
+          iframeTitle: "YouTube Short of Georgia on my mind",
+          externalAriaLabel: "Watch Georgia on my mind on YouTube in a new tab",
+        },
+        volare: {
+          title: "Volare",
+          subtitle: "Volare",
+          iframeTitle: "YouTube Short of Volare",
+          externalAriaLabel: "Watch Volare on YouTube in a new tab",
+        },
+        ePensoATe: {
+          title: "E penso a te",
+          subtitle: "E penso a te",
+          iframeTitle: "YouTube video of E penso a te",
+          externalAriaLabel: "Watch E penso a te on YouTube in a new tab",
+        },
+        mamboItaliano: {
+          title: "Mambo Italiano",
+          subtitle: "Mambo Italiano",
+          iframeTitle: "YouTube Short of Mambo Italiano",
+          externalAriaLabel: "Watch Mambo Italiano on YouTube in a new tab",
         },
       },
       externalLinkText: "Watch on YouTube",
@@ -1333,6 +1583,66 @@ const translations: Record<LanguageCode, Translation> = {
           iframeTitle: "Short YouTube de Staying Alive",
           externalAriaLabel: "Regarder Staying Alive sur YouTube dans un nouvel onglet",
         },
+        quandoQuando: {
+          title: "Quando Quando",
+          subtitle: "Quando Quando",
+          iframeTitle: "Vidéo YouTube de Quando Quando",
+          externalAriaLabel: "Regarder Quando Quando sur YouTube dans un nouvel onglet",
+        },
+        perUnOraDAmore: {
+          title: "Per un'ora d'amore",
+          subtitle: "Per un'ora d'amore",
+          iframeTitle: "Vidéo YouTube de Per un'ora d'amore",
+          externalAriaLabel: "Regarder Per un'ora d'amore sur YouTube dans un nouvel onglet",
+        },
+        thisMasquerade: {
+          title: "This Masquerade",
+          subtitle: "This Masquerade",
+          iframeTitle: "Vidéo YouTube de This Masquerade",
+          externalAriaLabel: "Regarder This Masquerade sur YouTube dans un nouvel onglet",
+        },
+        quellaCarezzaDellaSera: {
+          title: "Quella carezza della sera",
+          subtitle: "Quella carezza della sera",
+          iframeTitle: "Vidéo YouTube de Quella carezza della sera",
+          externalAriaLabel: "Regarder Quella carezza della sera sur YouTube dans un nouvel onglet",
+        },
+        ilCieloInUnaStanza: {
+          title: "Il cielo in una stanza",
+          subtitle: "Il cielo in una stanza",
+          iframeTitle: "Short YouTube de Il cielo in una stanza",
+          externalAriaLabel: "Regarder Il cielo in una stanza sur YouTube dans un nouvel onglet",
+        },
+        guardaCheLuna: {
+          title: "Guarda che luna",
+          subtitle: "Guarda che luna",
+          iframeTitle: "Short YouTube de Guarda che luna",
+          externalAriaLabel: "Regarder Guarda che luna sur YouTube dans un nouvel onglet",
+        },
+        georgiaOnMyMind: {
+          title: "Georgia on my mind",
+          subtitle: "Georgia on my mind",
+          iframeTitle: "Short YouTube de Georgia on my mind",
+          externalAriaLabel: "Regarder Georgia on my mind sur YouTube dans un nouvel onglet",
+        },
+        volare: {
+          title: "Volare",
+          subtitle: "Volare",
+          iframeTitle: "Short YouTube de Volare",
+          externalAriaLabel: "Regarder Volare sur YouTube dans un nouvel onglet",
+        },
+        ePensoATe: {
+          title: "E penso a te",
+          subtitle: "E penso a te",
+          iframeTitle: "Vidéo YouTube de E penso a te",
+          externalAriaLabel: "Regarder E penso a te sur YouTube dans un nouvel onglet",
+        },
+        mamboItaliano: {
+          title: "Mambo Italiano",
+          subtitle: "Mambo Italiano",
+          iframeTitle: "Short YouTube de Mambo Italiano",
+          externalAriaLabel: "Regarder Mambo Italiano sur YouTube dans un nouvel onglet",
+        },
       },
       externalLinkText: "Regarder sur YouTube",
       showAll: "Voir toutes les vidéos",
@@ -1620,6 +1930,66 @@ const translations: Record<LanguageCode, Translation> = {
           subtitle: "Energía dance inmediata para encender la noche.",
           iframeTitle: "Short de YouTube de Staying Alive",
           externalAriaLabel: "Ver Staying Alive en YouTube en una nueva pestaña",
+        },
+        quandoQuando: {
+          title: "Quando Quando",
+          subtitle: "Quando Quando",
+          iframeTitle: "Vídeo de YouTube de Quando Quando",
+          externalAriaLabel: "Ver Quando Quando en YouTube en una nueva pestaña",
+        },
+        perUnOraDAmore: {
+          title: "Per un'ora d'amore",
+          subtitle: "Per un'ora d'amore",
+          iframeTitle: "Vídeo de YouTube de Per un'ora d'amore",
+          externalAriaLabel: "Ver Per un'ora d'amore en YouTube en una nueva pestaña",
+        },
+        thisMasquerade: {
+          title: "This Masquerade",
+          subtitle: "This Masquerade",
+          iframeTitle: "Vídeo de YouTube de This Masquerade",
+          externalAriaLabel: "Ver This Masquerade en YouTube en una nueva pestaña",
+        },
+        quellaCarezzaDellaSera: {
+          title: "Quella carezza della sera",
+          subtitle: "Quella carezza della sera",
+          iframeTitle: "Vídeo de YouTube de Quella carezza della sera",
+          externalAriaLabel: "Ver Quella carezza della sera en YouTube en una nueva pestaña",
+        },
+        ilCieloInUnaStanza: {
+          title: "Il cielo in una stanza",
+          subtitle: "Il cielo in una stanza",
+          iframeTitle: "Short de YouTube de Il cielo in una stanza",
+          externalAriaLabel: "Ver Il cielo in una stanza en YouTube en una nueva pestaña",
+        },
+        guardaCheLuna: {
+          title: "Guarda che luna",
+          subtitle: "Guarda che luna",
+          iframeTitle: "Short de YouTube de Guarda che luna",
+          externalAriaLabel: "Ver Guarda che luna en YouTube en una nueva pestaña",
+        },
+        georgiaOnMyMind: {
+          title: "Georgia on my mind",
+          subtitle: "Georgia on my mind",
+          iframeTitle: "Short de YouTube de Georgia on my mind",
+          externalAriaLabel: "Ver Georgia on my mind en YouTube en una nueva pestaña",
+        },
+        volare: {
+          title: "Volare",
+          subtitle: "Volare",
+          iframeTitle: "Short de YouTube de Volare",
+          externalAriaLabel: "Ver Volare en YouTube en una nueva pestaña",
+        },
+        ePensoATe: {
+          title: "E penso a te",
+          subtitle: "E penso a te",
+          iframeTitle: "Vídeo de YouTube de E penso a te",
+          externalAriaLabel: "Ver E penso a te en YouTube en una nueva pestaña",
+        },
+        mamboItaliano: {
+          title: "Mambo Italiano",
+          subtitle: "Mambo Italiano",
+          iframeTitle: "Short de YouTube de Mambo Italiano",
+          externalAriaLabel: "Ver Mambo Italiano en YouTube en una nueva pestaña",
         },
       },
       externalLinkText: "Ver en YouTube",
@@ -1909,6 +2279,66 @@ const translations: Record<LanguageCode, Translation> = {
           iframeTitle: "YouTube-Short von Staying Alive",
           externalAriaLabel: "Staying Alive auf YouTube in einem neuen Tab ansehen",
         },
+        quandoQuando: {
+          title: "Quando Quando",
+          subtitle: "Quando Quando",
+          iframeTitle: "YouTube-Video von Quando Quando",
+          externalAriaLabel: "Quando Quando auf YouTube in einem neuen Tab ansehen",
+        },
+        perUnOraDAmore: {
+          title: "Per un'ora d'amore",
+          subtitle: "Per un'ora d'amore",
+          iframeTitle: "YouTube-Video von Per un'ora d'amore",
+          externalAriaLabel: "Per un'ora d'amore auf YouTube in einem neuen Tab ansehen",
+        },
+        thisMasquerade: {
+          title: "This Masquerade",
+          subtitle: "This Masquerade",
+          iframeTitle: "YouTube-Video von This Masquerade",
+          externalAriaLabel: "This Masquerade auf YouTube in einem neuen Tab ansehen",
+        },
+        quellaCarezzaDellaSera: {
+          title: "Quella carezza della sera",
+          subtitle: "Quella carezza della sera",
+          iframeTitle: "YouTube-Video von Quella carezza della sera",
+          externalAriaLabel: "Quella carezza della sera auf YouTube in einem neuen Tab ansehen",
+        },
+        ilCieloInUnaStanza: {
+          title: "Il cielo in una stanza",
+          subtitle: "Il cielo in una stanza",
+          iframeTitle: "YouTube-Short von Il cielo in una stanza",
+          externalAriaLabel: "Il cielo in una stanza auf YouTube in einem neuen Tab ansehen",
+        },
+        guardaCheLuna: {
+          title: "Guarda che luna",
+          subtitle: "Guarda che luna",
+          iframeTitle: "YouTube-Short von Guarda che luna",
+          externalAriaLabel: "Guarda che luna auf YouTube in einem neuen Tab ansehen",
+        },
+        georgiaOnMyMind: {
+          title: "Georgia on my mind",
+          subtitle: "Georgia on my mind",
+          iframeTitle: "YouTube-Short von Georgia on my mind",
+          externalAriaLabel: "Georgia on my mind auf YouTube in einem neuen Tab ansehen",
+        },
+        volare: {
+          title: "Volare",
+          subtitle: "Volare",
+          iframeTitle: "YouTube-Short von Volare",
+          externalAriaLabel: "Volare auf YouTube in einem neuen Tab ansehen",
+        },
+        ePensoATe: {
+          title: "E penso a te",
+          subtitle: "E penso a te",
+          iframeTitle: "YouTube-Video von E penso a te",
+          externalAriaLabel: "E penso a te auf YouTube in einem neuen Tab ansehen",
+        },
+        mamboItaliano: {
+          title: "Mambo Italiano",
+          subtitle: "Mambo Italiano",
+          iframeTitle: "YouTube-Short von Mambo Italiano",
+          externalAriaLabel: "Mambo Italiano auf YouTube in einem neuen Tab ansehen",
+        },
       },
       externalLinkText: "Auf YouTube ansehen",
       showAll: "Alle Videos anzeigen",
@@ -2197,6 +2627,66 @@ const translations: Record<LanguageCode, Translation> = {
           iframeTitle: "YouTube Shorts: Staying Alive",
           externalAriaLabel: "Смотреть Staying Alive на YouTube в новой вкладке",
         },
+        quandoQuando: {
+          title: "Quando Quando",
+          subtitle: "Quando Quando",
+          iframeTitle: "Видео YouTube: Quando Quando",
+          externalAriaLabel: "Смотреть Quando Quando на YouTube в новой вкладке",
+        },
+        perUnOraDAmore: {
+          title: "Per un'ora d'amore",
+          subtitle: "Per un'ora d'amore",
+          iframeTitle: "Видео YouTube: Per un'ora d'amore",
+          externalAriaLabel: "Смотреть Per un'ora d'amore на YouTube в новой вкладке",
+        },
+        thisMasquerade: {
+          title: "This Masquerade",
+          subtitle: "This Masquerade",
+          iframeTitle: "Видео YouTube: This Masquerade",
+          externalAriaLabel: "Смотреть This Masquerade на YouTube в новой вкладке",
+        },
+        quellaCarezzaDellaSera: {
+          title: "Quella carezza della sera",
+          subtitle: "Quella carezza della sera",
+          iframeTitle: "Видео YouTube: Quella carezza della sera",
+          externalAriaLabel: "Смотреть Quella carezza della sera на YouTube в новой вкладке",
+        },
+        ilCieloInUnaStanza: {
+          title: "Il cielo in una stanza",
+          subtitle: "Il cielo in una stanza",
+          iframeTitle: "YouTube Shorts: Il cielo in una stanza",
+          externalAriaLabel: "Смотреть Il cielo in una stanza на YouTube в новой вкладке",
+        },
+        guardaCheLuna: {
+          title: "Guarda che luna",
+          subtitle: "Guarda che luna",
+          iframeTitle: "YouTube Shorts: Guarda che luna",
+          externalAriaLabel: "Смотреть Guarda che luna на YouTube в новой вкладке",
+        },
+        georgiaOnMyMind: {
+          title: "Georgia on my mind",
+          subtitle: "Georgia on my mind",
+          iframeTitle: "YouTube Shorts: Georgia on my mind",
+          externalAriaLabel: "Смотреть Georgia on my mind на YouTube в новой вкладке",
+        },
+        volare: {
+          title: "Volare",
+          subtitle: "Volare",
+          iframeTitle: "YouTube Shorts: Volare",
+          externalAriaLabel: "Смотреть Volare на YouTube в новой вкладке",
+        },
+        ePensoATe: {
+          title: "E penso a te",
+          subtitle: "E penso a te",
+          iframeTitle: "Видео YouTube: E penso a te",
+          externalAriaLabel: "Смотреть E penso a te на YouTube в новой вкладке",
+        },
+        mamboItaliano: {
+          title: "Mambo Italiano",
+          subtitle: "Mambo Italiano",
+          iframeTitle: "YouTube Shorts: Mambo Italiano",
+          externalAriaLabel: "Смотреть Mambo Italiano на YouTube в новой вкладке",
+        },
       },
       externalLinkText: "Смотреть на YouTube",
       showAll: "Показать все видео",
@@ -2394,7 +2884,7 @@ export default function Home() {
   const galleryItems = [
     {
       id: "gallery-01-momenti-dal-vivo-01",
-      src: "/images/Live/momenti-dal-vivo-01.webp",
+      src: "/images/Live/momenti-dal-vivo-02.webp",
       alt: text.gallery.imageAlts.livePanorama,
       variant: "hero" as const,
       priority: true,
@@ -2409,14 +2899,14 @@ export default function Home() {
     },
     {
       id: "gallery-02-ciro-portrait",
-      src: "/gallery/gallery-02-ciro-portrait-v2.webp",
+      src: "/gallery/gallery-02-ciro-portrait-v3.webp",
       alt: text.gallery.imageAlts.ciroPortrait,
       variant: "portrait" as const,
       openLabel: `${text.gallery.openImageAriaLabel}: ${text.gallery.imageAlts.ciroPortrait}`,
     },
     {
       id: "gallery-04-duo-live-panorama",
-      src: "/gallery/gallery-04-duo-live-panorama-v2.webp",
+      src: "/gallery/gallery-04-duo-live-panorama-v3.webp",
       alt: text.gallery.imageAlts.livePanorama,
       variant: "live-large" as const,
       openLabel: `${text.gallery.openImageAriaLabel}: ${text.gallery.imageAlts.livePanorama}`,
@@ -3102,20 +3592,23 @@ export default function Home() {
               {(showAllVideo ? videoItems : videoItems.slice(0, 3)).map((videoItem) => {
                 const collection = text.video.collections[videoItem.key];
                 const cardTitle = collection.title ?? videoItem.title;
+                const youtubeId = getYouTubeId(videoItem.url);
                 const embedUrl = getYouTubeEmbedUrl(videoItem.url);
 
-                if (!embedUrl) {
+                if (!embedUrl || !youtubeId) {
                   return null;
                 }
+
+                const stableVideoId = `video-${youtubeId}`;
 
                 const cardClassName = videoItem.orientation === "portrait"
                   ? "video-card video-card-portrait"
                   : "video-card";
 
                 return (
-                  <article key={videoItem.key} className={cardClassName}>
+                  <article key={stableVideoId} className={cardClassName}>
                     <YouTubePlayer
-                      playerId={`video-${videoItem.key}`}
+                      playerId={stableVideoId}
                       embedUrl={embedUrl}
                       iframeTitle={collection.iframeTitle}
                       orientation={videoItem.orientation}
